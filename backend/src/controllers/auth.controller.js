@@ -9,6 +9,21 @@ const argonOptions = {
   parallelism: 1,
 };
 
+
+const tryVerifyPassword = async (storedPasswordHash, rawPassword) => {
+  if (!storedPasswordHash || !rawPassword) {
+    return { isValid: false, needsRehash: false };
+  }
+
+  try {
+    const isArgonValid = await argon2.verify(storedPasswordHash, rawPassword);
+    return { isValid: isArgonValid, needsRehash: false };
+  } catch {
+    const isLegacyPlainTextValid = storedPasswordHash === rawPassword;
+    return { isValid: isLegacyPlainTextValid, needsRehash: isLegacyPlainTextValid };
+  }
+};
+
 const generateToken = (user) => {
   return jwt.sign(
     {
@@ -92,11 +107,15 @@ const login = async (req, res) => {
       });
     }
 
+    const normalizedIdentifier = loginIdentifier.toLowerCase();
+
     const user = await prisma.user.findFirst({
       where: {
         OR: [
-          { email: loginIdentifier.toLowerCase() },
+          { email: normalizedIdentifier },
+          { email: loginIdentifier },
           { username: loginIdentifier },
+          { username: normalizedIdentifier },
         ],
       },
     });
@@ -107,19 +126,23 @@ const login = async (req, res) => {
       });
     }
 
-    let isPasswordValid = false;
+    const { isValid: isPasswordValid, needsRehash } = await tryVerifyPassword(
+      user.passwordHash,
+      password
+    );
 
-    try {
-      isPasswordValid = await argon2.verify(user.passwordHash, password);
-    } catch {
+    if (!isPasswordValid) {
       return res.status(401).json({
         message: "Identifiants invalides.",
       });
     }
 
-    if (!isPasswordValid) {
-      return res.status(401).json({
-        message: "Identifiants invalides.",
+    if (needsRehash) {
+      const upgradedPasswordHash = await argon2.hash(password, argonOptions);
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { passwordHash: upgradedPasswordHash },
       });
     }
 
