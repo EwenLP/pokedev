@@ -1,6 +1,13 @@
-const bcrypt = require("bcrypt");
+const argon2 = require("argon2");
 const jwt = require("jsonwebtoken");
 const prisma = require("../config/prisma");
+
+const argonOptions = {
+  type: argon2.argon2id,
+  timeCost: 3,
+  memoryCost: 65536,
+  parallelism: 1,
+};
 
 const generateToken = (user) => {
   return jwt.sign(
@@ -39,7 +46,7 @@ const register = async (req, res) => {
       });
     }
 
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = await argon2.hash(password, argonOptions);
 
     const newUser = await prisma.user.create({
       data: {
@@ -92,7 +99,7 @@ const login = async (req, res) => {
       });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+    const isPasswordValid = await argon2.verify(user.passwordHash, password);
 
     if (!isPasswordValid) {
       return res.status(401).json({
