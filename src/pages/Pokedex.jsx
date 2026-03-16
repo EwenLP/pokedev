@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { fetchPokemonList, fetchPokemonDetails } from "../api/pokemonApi";
 import PokemonCard from "../components/PokemonCard";
 
@@ -56,7 +57,12 @@ export default function Pokedex() {
 
 	return (
 		<div className="max-w-6xl mx-auto p-6">
-			<h1 className="text-3xl font-bold mb-6">Pokédex</h1>
+			<div className="flex items-center justify-between gap-4 mb-6">
+				<h1 className="text-3xl font-bold">Pokédex</h1>
+				<Link className="px-4 py-2 bg-blue-700 rounded" to="/team">
+					Créer mon équipe
+				</Link>
+			</div>
 			<input
 				type="text"
 				placeholder="Rechercher un Pokémon"
