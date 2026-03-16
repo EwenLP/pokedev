@@ -1,32 +1,46 @@
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { fetchPokemonDescription } from "../api/pokemonApi";
+import TypeBadge from "../components/TypeBadge";
 
-export default function PokemonCard({ pokemon }) {
-  return (
-    <Link to={`/pokemon/${pokemon.id}`}>
-      <div className="bg-slate-800 p-4 rounded-lg hover:bg-slate-700 transition">
+export default function PokemonDetail({ pokemon }) {
 
-        <img
-          src={pokemon.image}
-          alt={pokemon.name}
-          className="mx-auto w-24"
-        />
+	const [description, setDescription] = useState("");
 
-        <h3 className="text-center mt-2 font-semibold">
-          {pokemon.name}
-        </h3>
+	useEffect(() => {
+		if(!pokemon) return;
+		fetchPokemonDescription(pokemon.id).then(setDescription);
+	}, [pokemon]);
 
-        <div className="flex justify-center gap-2 mt-2">
-          {pokemon.apiTypes.map((type) => (
-            <span
-              key={type.name}
-              className="text-xs bg-slate-600 px-2 py-1 rounded"
-            >
-              {type.name}
-            </span>
-          ))}
-        </div>
+	if (!pokemon) {
+		return (
+			<div className="flex items-center justify-center text-gray-400 gap-4 border border-sky-950/50 p-4">
+				<img className="object-scale-down h-6 w-6" src="/pokeball.png" alt="Pokeball" />
+				<p className="border-l border-l-sky-950/50 pl-4">Sélectionne un Pokémon</p>
+			</div>
+		);
+	}
 
-      </div>
-    </Link>
-  );
+	return (
+		<div className="bg-slate-800 rounded-xl p-6">
+			<img
+				src={pokemon.image}
+				alt={pokemon.name}
+				className="mx-auto w-64"
+			/>
+			<div className="bg-slate-600 rounded-xl p-6">
+				<h2 className="text-2xl font-bold mt-4 capitalize flex justify-center items-center gap-4">
+					{pokemon.name}
+					<p className="text-base pt-2">No. {pokemon.id}</p>
+				</h2>
+				<div className="flex justify-center gap-2 mt-4">
+					{pokemon.types.map((type) => (
+						<TypeBadge key={type} type={type} />
+					))}
+				</div>
+				<p className="text-gray-300 mt-4 text-center">
+					{description}
+				</p>
+			</div>
+		</div>
+	);
 }
