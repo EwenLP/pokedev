@@ -154,6 +154,16 @@ const getProfile = async (req, res) => {
         role: true,
         createdAt: true,
         updatedAt: true,
+        teams: {
+          orderBy: {
+            createdAt: "desc",
+          },
+          select: {
+            id: true,
+            name: true,
+            createdAt: true,
+          },
+        },
       },
     });
 
@@ -163,7 +173,11 @@ const getProfile = async (req, res) => {
       });
     }
 
-    return res.status(200).json(user);
+    return res.status(200).json({
+      ...user,
+      teamsCount: user.teams.length,
+      latestTeam: user.teams[0] || null,
+    });
   } catch (error) {
     console.error("Erreur getProfile :", error);
     return res.status(500).json({
