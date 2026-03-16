@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Pokedex from "./pages/Pokedex.jsx";
 import PokemonDetail from "./pages/PokemonDetail.jsx";
 import TeamBuilder from "./pages/TeamBuilder.jsx";
+import Login from "./pages/Login.jsx";
 
 function App() {
 	return (
@@ -13,6 +14,7 @@ function App() {
 					<Route path="/pokedex" element={<Pokedex />} />
 					<Route path="/pokemon/:id" element={<PokemonDetail />} />
 					<Route path="/team" element={<TeamBuilder />} />
+					<Route path="/login" element={<Login />} />
 				</Routes>
 			</div>
 		</BrowserRouter>
