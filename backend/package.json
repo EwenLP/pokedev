@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "postinstall": "prisma generate",
-    "create:user": "node src/scripts/createUser.js"
+    "create:user": "node src/scripts/createUser.js",
+    "seed:users": "node prisma/seedUsers.js"
   },
   "dependencies": {
     "@prisma/client": "6.19.2",
