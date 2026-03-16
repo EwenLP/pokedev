@@ -55,6 +55,34 @@
 
 ---
 
+
+## 👤 Créer un utilisateur (backend)
+
+Deux options sont disponibles :
+
+1. **Via l'API** (inscription classique)
+   - Endpoint : `POST /api/auth/register`
+   - Body JSON :
+   ```json
+   {
+     "email": "ash@pokebuild.com",
+     "username": "ash",
+     "password": "Pikachu123!"
+   }
+   ```
+
+2. **Via le script CLI** (utile pour créer un compte rapidement, y compris admin)
+   - Depuis le dossier `backend` :
+   ```bash
+   npm run create:user -- ash@pokebuild.com ash Pikachu123! USER
+   ```
+   - Ou pour un admin :
+   ```bash
+   npm run create:user -- admin@pokebuild.com admin StrongPass! ADMIN
+   ```
+
+Le script hache automatiquement le mot de passe avec **Argon2** avant l'enregistrement en base.
+
 ## 💬 Conventions de Commits
 
 **Format :**
