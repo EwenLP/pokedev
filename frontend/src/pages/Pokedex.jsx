@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchPokemonList, fetchPokemonDetails } from "../api/pokemonApi";
-import PokemonCard from "../components/PokemonCard";
+import { fetchPokemonList, fetchPokemonDetails } from "../api/pokemonApi.js";
+import PokemonCard from "../components/PokemonCard.jsx";
 
 export default function Pokedex() {
 	const [loading, setLoading] = useState(true);

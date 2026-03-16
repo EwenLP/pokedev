@@ -61,5 +61,5 @@ model TeamPokemon {
 
   team         Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
-  @@unique([teamId, slot])
+  @@unique([teamId, pokemonApiId])
 }
