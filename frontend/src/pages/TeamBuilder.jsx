@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchPokemonDetails, fetchPokemonList } from "../api/pokemonApi";
+import { fetchPokemonDetails, fetchPokemonList } from "../api/pokemonApi.js";
 
 const TEAM_STORAGE_KEY = "pokebuild_saved_teams";
 

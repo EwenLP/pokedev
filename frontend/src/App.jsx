@@ -1,8 +1,8 @@
 import './App.css'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Pokedex from "./pages/Pokedex";
-import PokemonDetail from "./pages/PokemonDetail";
-import TeamBuilder from "./pages/TeamBuilder";
+import Pokedex from "./pages/Pokedex.jsx";
+import PokemonDetail from "./pages/PokemonDetail.jsx";
+import TeamBuilder from "./pages/TeamBuilder.jsx";
 
 function App() {
 	return (
