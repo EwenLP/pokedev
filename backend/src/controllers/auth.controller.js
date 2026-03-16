@@ -27,8 +27,10 @@ const generateToken = (user) => {
 const register = async (req, res) => {
   try {
     const { email, username, password } = req.body;
+    const normalizedEmail = (email || "").trim().toLowerCase();
+    const normalizedUsername = (username || "").trim();
 
-    if (!email || !username || !password) {
+    if (!normalizedEmail || !normalizedUsername || !password) {
       return res.status(400).json({
         message: "Email, username et mot de passe sont obligatoires.",
       });
@@ -36,7 +38,7 @@ const register = async (req, res) => {
 
     const existingUser = await prisma.user.findFirst({
       where: {
-        OR: [{ email }, { username }],
+        OR: [{ email: normalizedEmail }, { username: normalizedUsername }],
       },
     });
 
@@ -50,8 +52,8 @@ const register = async (req, res) => {
 
     const newUser = await prisma.user.create({
       data: {
-        email,
-        username,
+        email: normalizedEmail,
+        username: normalizedUsername,
         passwordHash,
         role: "USER",
       },
@@ -81,16 +83,22 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, username, identifier, password } = req.body;
+    const loginIdentifier = (identifier || email || username || "").trim();
 
-    if (!email || !password) {
+    if (!loginIdentifier || !password) {
       return res.status(400).json({
-        message: "Email et mot de passe sont obligatoires.",
+        message: "Email/username et mot de passe sont obligatoires.",
       });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email },
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: loginIdentifier.toLowerCase() },
+          { username: loginIdentifier },
+        ],
+      },
     });
 
     if (!user) {
@@ -99,7 +107,15 @@ const login = async (req, res) => {
       });
     }
 
-    const isPasswordValid = await argon2.verify(user.passwordHash, password);
+    let isPasswordValid = false;
+
+    try {
+      isPasswordValid = await argon2.verify(user.passwordHash, password);
+    } catch {
+      return res.status(401).json({
+        message: "Identifiants invalides.",
+      });
+    }
 
     if (!isPasswordValid) {
       return res.status(401).json({
@@ -138,6 +154,16 @@ const getProfile = async (req, res) => {
         role: true,
         createdAt: true,
         updatedAt: true,
+        teams: {
+          orderBy: {
+            createdAt: "desc",
+          },
+          select: {
+            id: true,
+            name: true,
+            createdAt: true,
+          },
+        },
       },
     });
 
@@ -147,7 +173,11 @@ const getProfile = async (req, res) => {
       });
     }
 
-    return res.status(200).json(user);
+    return res.status(200).json({
+      ...user,
+      teamsCount: user.teams.length,
+      latestTeam: user.teams[0] || null,
+    });
   } catch (error) {
     console.error("Erreur getProfile :", error);
     return res.status(500).json({
