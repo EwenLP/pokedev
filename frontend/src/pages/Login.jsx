@@ -1,8 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { setToken } from "../utils/auth";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export default function Login() {
+  const navigate = useNavigate();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -33,10 +36,11 @@ export default function Login() {
       }
 
       if (data.token) {
-        localStorage.setItem("token", data.token);
+        setToken(data.token);
       }
 
       setMessage("Connexion réussie.");
+      navigate("/team", { replace: true });
     } catch {
       setIsError(true);
       setMessage("Impossible de contacter le serveur.");
