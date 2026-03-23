@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/NavBar';
 import { getToken, logout } from '../utils/auth';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -70,7 +69,6 @@ export default function ProfilePage() {
   if (loading) {
     return (
         <div className="min-h-screen bg-[#0a1120]">
-          <Navbar />
           <div className="flex items-center justify-center h-[calc(100vh-100px)]">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
           </div>
@@ -79,8 +77,7 @@ export default function ProfilePage() {
   }
 
   return (
-      <div className="min-h-screen bg-[#0a1120] text-white font-sans">
-        <Navbar />
+      <div className="text-white font-sans">
         <main className="max-w-4xl mx-auto px-4 py-8">
           <h2 className="text-4xl font-bold text-cyan-400 mb-10">Mon Profil</h2>
           {isLoggedIn && user ? (
@@ -93,7 +90,6 @@ export default function ProfilePage() {
               <LoggedOutView />
           )}
         </main>
-        <Footer />
       </div>
   );
 }
@@ -139,13 +135,8 @@ function LoggedInView({ user, formatDate, onLogout }) {
 
         <div className="space-y-3">
           <MenuLink title="Mon Équipe" href="/team" />
-          <MenuLink title="Mentions légales" href="/legal" />
-          <MenuLink title="Politique de confidentialité" href="/privacy" />
         </div>
 
-        <button onClick={onLogout} className="w-full py-4 text-red-400 border border-red-900/50 rounded-xl hover:bg-red-950/30 transition-all">
-          Se déconnecter
-        </button>
       </div>
   );
 }
@@ -204,19 +195,5 @@ function MenuLink({ title, href }) {
         <span className="group-hover:text-cyan-400 transition-colors">{title}</span>
         <span className="text-gray-500 group-hover:translate-x-1 group-hover:text-cyan-400 transition-all">›</span>
       </a>
-  );
-}
-
-function Footer() {
-  return (
-      <footer className="border-t border-gray-800 mt-16 py-6">
-        <div className="max-w-7xl mx-auto px-4 flex justify-between items-center text-gray-500 text-sm">
-          <span>© 2026 PokéDex App</span>
-          <div className="flex gap-6">
-            <a href="/legal" className="hover:text-gray-300 transition-colors">Mentions légales</a>
-            <a href="/privacy" className="hover:text-gray-300 transition-colors">Confidentialité</a>
-          </div>
-        </div>
-      </footer>
   );
 }

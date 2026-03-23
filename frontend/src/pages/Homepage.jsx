@@ -1,12 +1,8 @@
 import { Link } from 'react-router-dom';
-import Navbar from '../components/NavBar';
-
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#0a1120] text-white font-sans">
-      <Navbar />
-
-      <main className="flex flex-col items-center justify-center h-[calc(100vh-100px)] px-4">
+    <div className="text-white font-sans">
+      <main className="flex flex-col items-center justify-center h-[calc(100vh-120px)] px-4">
         <h1 className="text-6xl font-extrabold text-cyan-400 mb-4 tracking-tight">
           PokéDex
         </h1>
