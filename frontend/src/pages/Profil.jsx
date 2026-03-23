@@ -22,7 +22,7 @@ export default function ProfilePage() {
     }
 
     try {
-      const response = await fetch('[localhost](http://localhost:3000/api/profile)', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/profile`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -49,6 +49,7 @@ export default function ProfilePage() {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
     setUser(null);
+    naviagate('/');
   };
 
   const formatDate = (dateString) => {

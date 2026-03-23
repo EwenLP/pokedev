@@ -1,10 +1,13 @@
 import './App.css'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Pokedex from "./pages/Pokedex.jsx";
-import PokemonDetail from "./pages/PokemonDetail.jsx";
 import TeamBuilder from "./pages/TeamBuilder.jsx";
-import Profil from "./pages/Profil.jsx";
 import HomePage from "./pages/Homepage.jsx";
+import Login from "./pages/Login.jsx";
+
+import PokemonDetail from "./components/PokemonDetail.jsx";
+import Profil from "./pages/Profil.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 function App() {
 	return (
@@ -14,8 +17,23 @@ function App() {
 					<Route path="/" element={<HomePage />} />
 					<Route path="/pokedex" element={<Pokedex />} />
 					<Route path="/pokemon/:id" element={<PokemonDetail />} />
-					<Route path="/team" element={<TeamBuilder />} />
-					<Route path="/profil" element={<Profil />} />
+					<Route
+						path="/team"
+						element={
+							<ProtectedRoute>
+								<TeamBuilder />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/profil"
+						element={
+							<ProtectedRoute>
+								<Profil />
+							</ProtectedRoute>
+						}
+					/>
+					<Route path="/login" element={<Login />} />
 				</Routes>
 			</div>
 		</BrowserRouter>
