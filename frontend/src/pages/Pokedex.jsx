@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom"; // Ajout pour la navigation
-import { fetchPokemonList, fetchPokemonDetails, fetchPokemonFrenchData } from "../api/pokemonApi";
+import { fetchAllPokemon } from "../api/pokemonApi";
+import { logout } from "../utils/auth";
 import PokemonCard from "../components/PokemonCard";
 import SearchBar from "../components/SearchBar";
 import PokemonDetail from "../components/PokemonDetail.jsx";
@@ -26,22 +27,15 @@ export default function Pokedex() {
 
 	useEffect(() => {
 		async function loadPokemon() {
-			const list = await fetchPokemonList();
+			const allPokemon = await fetchAllPokemon();
 
-			const detailedPokemon = await Promise.all(
-				list.map(async (pokemon) => {
-					const details = await fetchPokemonDetails(pokemon.url);
-					const frenchData = await fetchPokemonFrenchData(details.id);
-
-					return {
-						id: details.id,
-						name: frenchData.name,
-						description: frenchData.description,
-						image: details.sprites.other["official-artwork"].front_default,
-						types: details.types.map((t) => t.type.name) // anglais
-					};
-				})
-			);
+			const detailedPokemon = allPokemon.map((pokemon) => ({
+				id: pokemon.id,
+				name: pokemon.nameFr,
+				description: pokemon.descriptionFr,
+				image: pokemon.image,
+				types: pokemon.types
+			}));
 
 			setPokemonList(detailedPokemon);
 			setFilteredPokemon(detailedPokemon);
@@ -55,11 +49,10 @@ export default function Pokedex() {
 		setCurrentPage(1);
 	}, [search]);
 
-	// Fonction à adapter selon ton système d'authentification (ex: suppression de token, redirection)
 	const handleLogout = () => {
 		console.log("Déconnexion de l'utilisateur...");
-		// localStorage.removeItem("token");
-		// window.location.href = "/login";
+		logout();
+		window.location.href = "/login";
 	};
 
 	if (loading) {

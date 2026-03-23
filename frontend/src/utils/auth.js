@@ -6,7 +6,18 @@ export function getToken() {
 }
 
 export function setToken(token) {
-  localStorage.setItem(TOKEN_KEY, token);
+  try {
+    localStorage.setItem(TOKEN_KEY, token);
+  } catch (error) {
+    console.warn("localStorage quota exceeded, clearing cache and retrying...");
+    localStorage.removeItem("pokedex_all_pokemon");
+    try {
+      localStorage.setItem(TOKEN_KEY, token);
+    } catch (secondError) {
+      localStorage.clear();
+      localStorage.setItem(TOKEN_KEY, token);
+    }
+  }
 }
 
 export function logout() {
