@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/NavBar';
+import { getToken, logout } from '../utils/auth';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export default function ProfilePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -13,7 +16,7 @@ export default function ProfilePage() {
   }, []);
 
   const fetchUserData = async () => {
-    const token = localStorage.getItem('token');
+    const token = getToken();
 
     if (!token) {
       setIsLoggedIn(false);
@@ -22,8 +25,7 @@ export default function ProfilePage() {
     }
 
     try {
-      // Correction de l'URL fetch
-      const response = await fetch('http://localhost:3000/api/profile', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -47,10 +49,10 @@ export default function ProfilePage() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    logout();
     setIsLoggedIn(false);
     setUser(null);
-    navigate('/'); // Correction faute de frappe ici
+    navigate('/login');
   };
 
   const formatDate = (dateString) => {
