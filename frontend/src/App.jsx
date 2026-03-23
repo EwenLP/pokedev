@@ -1,9 +1,10 @@
-import './App.css'
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import "./App.css";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Pokedex from "./pages/Pokedex.jsx";
-import PokemonDetail from "./pages/PokemonDetail.jsx";
+import PokemonDetail from "./components/PokemonDetail.jsx";
 import TeamBuilder from "./pages/TeamBuilder.jsx";
 import Profil from "./pages/Profil.jsx";
+import Login from "./pages/Login.jsx";
 
 function App() {
 	return (
@@ -15,10 +16,11 @@ function App() {
 					<Route path="/pokemon/:id" element={<PokemonDetail />} />
 					<Route path="/team" element={<TeamBuilder />} />
 					<Route path="/profil" element={<Profil />} />
+					<Route path="/login" element={<Login />} />
 				</Routes>
 			</div>
 		</BrowserRouter>
 	)
 }
 
-export default App
+export default App;
