@@ -19,6 +19,7 @@ export default function Login() {
     setIsLoading(true);
 
     try {
+      console.log("Tentative de connexion à :", `${API_BASE_URL}/api/auth/login`);
       const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: {
@@ -41,7 +42,8 @@ export default function Login() {
 
       setMessage("Connexion réussie.");
       navigate("/team", { replace: true });
-    } catch {
+    } catch (error) {
+      console.error("Erreur de connexion détaillée :", error);
       setIsError(true);
       setMessage("Impossible de contacter le serveur.");
     } finally {

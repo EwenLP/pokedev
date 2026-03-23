@@ -35,9 +35,9 @@ export default function Navbar() {
         </NavLink>
 
         <Link
-          to="/profile"
+          to="/profil"
           className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${
-            isActive('/profile')
+            isActive('/profil')
               ? 'bg-cyan-900/30 text-cyan-400 border-cyan-800'
               : 'border-transparent hover:text-white'
           }`}
