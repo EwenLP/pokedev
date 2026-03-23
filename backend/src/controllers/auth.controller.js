@@ -219,8 +219,64 @@ const getProfile = async (req, res) => {
   }
 };
 
+const updateProfile = async (req, res) => {
+  try {
+    const { email, username } = req.body;
+    const userId = req.user.id;
+
+    const normalizedEmail = email ? email.trim().toLowerCase() : undefined;
+    const normalizedUsername = username ? username.trim() : undefined;
+
+    if (normalizedEmail || normalizedUsername) {
+      const existingUser = await prisma.user.findFirst({
+        where: {
+          OR: [
+            normalizedEmail ? { email: normalizedEmail } : null,
+            normalizedUsername ? { username: normalizedUsername } : null,
+          ].filter(Boolean),
+          NOT: { id: userId },
+        },
+      });
+
+      if (existingUser) {
+        return res.status(409).json({
+          message: "Ce pseudo ou cet email est déjà utilisé par un autre dresseur.",
+        });
+      }
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...(normalizedEmail && { email: normalizedEmail }),
+        ...(normalizedUsername && { username: normalizedUsername }),
+      },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        role: true,
+      },
+    });
+
+    const newToken = generateToken(updatedUser);
+
+    return res.status(200).json({
+      message: "Profil mis à jour avec succès.",
+      user: updatedUser,
+      token: newToken, 
+    });
+  } catch (error) {
+    console.error("Erreur updateProfile :", error);
+    return res.status(500).json({
+      message: "Erreur serveur lors de la mise à jour du profil.",
+    });
+  }
+};
+
 module.exports = {
   register,
   login,
   getProfile,
+  updateProfile,
 };
