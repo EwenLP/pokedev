@@ -1,7 +1,7 @@
 import "./App.css";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Pokedex from "./pages/Pokedex.jsx";
-import PokemonDetail from "./pages/PokemonDetail.jsx";
+import PokemonDetail from "./components/PokemonDetail.jsx";
 import TeamBuilder from "./pages/TeamBuilder.jsx";
 import Login from "./pages/Login.jsx";
 import Profile from "./pages/Profile.jsx";
