@@ -1,4 +1,4 @@
-import TypeBadge from "./TypeBadge.jsx";
+import TypeBadge from "./TypeBadge";
 
 export default function PokemonDetail({ pokemon }) {
 	if (!pokemon) {

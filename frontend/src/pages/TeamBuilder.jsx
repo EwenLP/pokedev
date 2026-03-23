@@ -475,7 +475,7 @@ export default function TeamBuilder() {
       setAllPokemon(
           allPokemonData.map((pokemon) => ({
             id: pokemon.id,
-            name: pokemon.name,
+            name: pokemon.nameFr,
             image: pokemon.image,
             types: pokemon.types,
             stats: pokemon.stats || null,
