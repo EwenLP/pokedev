@@ -4,9 +4,10 @@ import { setToken } from "../utils/auth";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
-export default function Login() {
+export default function Register() {
   const navigate = useNavigate();
-  const [identifier, setIdentifier] = useState("");
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
@@ -19,20 +20,20 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      console.log("Tentative de connexion à :", `${API_BASE_URL}/api/auth/login`);
-      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      console.log("Tentative d'inscription à :", `${API_BASE_URL}/api/auth/register`);
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ identifier, password }),
+        body: JSON.stringify({ email, username, password }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
         setIsError(true);
-        setMessage(data.message || "Erreur de connexion.");
+        setMessage(data.message || "Erreur d'inscription.");
         return;
       }
 
@@ -40,10 +41,12 @@ export default function Login() {
         setToken(data.token);
       }
 
-      setMessage("Connexion réussie.");
-      navigate("/team", { replace: true });
+      setMessage("Inscription réussie ! Redirection en cours...");
+      setTimeout(() => {
+        navigate("/team", { replace: true });
+      }, 1500);
     } catch (error) {
-      console.error("Erreur de connexion détaillée :", error);
+      console.error("Erreur d'inscription détaillée :", error);
       setIsError(true);
       setMessage("Impossible de contacter le serveur.");
     } finally {
@@ -60,27 +63,45 @@ export default function Login() {
             alt="Pokeball"
             className="w-14 h-14 mx-auto mb-3 drop-shadow"
           />
-          <h1 className="text-3xl font-bold tracking-tight">Connexion</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Inscription</h1>
           <p className="text-slate-300 mt-2 text-sm">
-            Connecte-toi avec ton email ou ton username.
+            Crée ton compte Pokebuild dès maintenant.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label
-              htmlFor="identifier"
+              htmlFor="email"
               className="block text-sm font-medium text-slate-200 mb-2"
             >
-              Email ou username
+              Email
             </label>
             <input
-              id="identifier"
-              type="text"
-              value={identifier}
-              onChange={(event) => setIdentifier(event.target.value)}
+              id="email"
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
               required
-              placeholder="ex: admin@pokebuild.com ou admin"
+              placeholder="ex: ash@ketchum.com"
+              className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/50 transition"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-slate-200 mb-2"
+            >
+              Username
+            </label>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(event) => setUsername(event.target.value)}
+              required
+              placeholder="ex: Sacha"
               className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/50 transition"
             />
           </div>
@@ -108,14 +129,14 @@ export default function Login() {
             disabled={isLoading}
             className="w-full rounded-xl bg-indigo-500 hover:bg-indigo-400 disabled:opacity-60 disabled:cursor-not-allowed font-semibold py-3 transition"
           >
-            {isLoading ? "Connexion..." : "Se connecter"}
+            {isLoading ? "Inscription..." : "S'inscrire"}
           </button>
         </form>
 
         <p className="mt-6 text-center text-sm text-slate-400">
-          Pas encore de compte ?{" "}
-          <Link to="/register" className="text-indigo-400 hover:text-indigo-300 font-medium">
-            S'inscrire
+          Déjà un compte ?{" "}
+          <Link to="/login" className="text-indigo-400 hover:text-indigo-300 font-medium">
+            Se connecter
           </Link>
         </p>
 
