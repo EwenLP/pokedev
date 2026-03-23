@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom"; // Ajout pour la navigation
 import { fetchAllPokemon } from "../api/pokemonApi";
-import { logout } from "../utils/auth";
 import PokemonCard from "../components/PokemonCard";
 import SearchBar from "../components/SearchBar";
 import PokemonDetail from "../components/PokemonDetail.jsx";
@@ -49,34 +48,12 @@ export default function Pokedex() {
 		setCurrentPage(1);
 	}, [search]);
 
-	const handleLogout = () => {
-		console.log("Déconnexion de l'utilisateur...");
-		logout();
-		window.location.href = "/login";
-	};
-
 	if (loading) {
 		return <p className="text-center mt-20">Chargement du Pokédex...</p>;
 	}
 
 	return (
 		<>
-			{/* Header avec liens de navigation et bouton de déconnexion */}
-			<header className="bg-slate-800 text-white p-4 shadow-md flex justify-between items-center rounded-2xl">
-				<nav className="flex gap-6 font-semibold ">
-					<Link to="/" className="hover:text-blue-400 transition-colors">Accueil</Link>
-					<Link to="/pokedex" className="text-blue-400">Pokédex</Link>
-					<Link to="/team" className="text-blue-400">Team</Link>
-					<Link to="/profil" className="hover:text-blue-400 transition-colors">Mon Profil</Link>
-				</nav>
-				<button
-					onClick={handleLogout}
-					className="bg-red-500 hover:bg-red-600 rounded-md text-white px-4 py-2 rounded transition-colors font-medium"
-				>
-					Déconnexion
-				</button>
-			</header>
-
 			{/* Contenu principal */}
 			<div className="max-w-screen-2xl mx-auto p-6 flex justify-center gap-8">
 				{/* Pokedex */}
