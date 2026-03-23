@@ -1,27 +1,27 @@
-# 🐉 Pokebuild
+# Pokebuild
 
 **Pokebuild** est une application web permettant aux dresseurs de consulter le Pokédex et de concevoir leur équipe stratégique de 6 Pokémon.
 
 ---
 
-## 🚀 Fonctionnalités
+## Fonctionnalités
 
-### 👀 Mode Visiteur
+### Mode Visiteur
 - Consultation du Pokédex complet
 - Fonction de recherche (nom, type, etc.)
 
-### 👤 Mode Utilisateur
+### Mode Utilisateur
 - Inscription / Connexion
 - Création d’une équipe de 6 Pokémon
 - Modification et sauvegarde de l’équipe
 
-### 🛡️ Mode Admin
+### Mode Admin
 - Gestion complète des utilisateurs
 - Suppression / modification des comptes si nécessaire
 
 ---
 
-## 🛠️ Stack Technique
+## Stack Technique
 
 - **Frontend :** React.js (Vite)
 - **Routing :** React Router
@@ -31,9 +31,9 @@
 
 ---
 
-## 📋 Conventions de Nommage
+## Conventions de Nommage
 
-### 📁 Fichiers et Dossiers
+### Fichiers et Dossiers
 - **Composants :** `PascalCase`  
   Exemple : `PokemonCard.jsx`
 - **Dossiers :** `kebab-case`  
@@ -43,7 +43,7 @@
 
 ---
 
-### 💻 Code (JavaScript / React)
+### Code (JavaScript / React)
 
 - **Variables / Fonctions :** `camelCase`  
   Exemple :
@@ -55,7 +55,7 @@
 
 ---
 
-## 💬 Conventions de Commits
+## Conventions de Commits
 
 **Format :**
 ```
@@ -78,21 +78,21 @@ git commit -m "[feat] ajout de la recherche par type"
 
 ---
 
-# ✅ CHECK LIST VALIDATION PROJET SUPPORT (APPLICATION DES EQUIPES)
+# CHECK LIST VALIDATION PROJET SUPPORT (APPLICATION DES EQUIPES)
 
-## 🎯 But
+## But
 
 Valider rapidement un projet support réaliste et compatible certification (BC03, BC04, transversale).
 
 ---
 
-## 📏 Règle
+## Règle
 
 Le projet est validé **si et seulement si** tous les points ci-dessous sont respectés.
 
 ---
 
-## 🧱 Stack et Structure
+## Stack et Structure
 
 - Frontend présent
 - API présente (backend réel)
@@ -101,7 +101,7 @@ Le projet est validé **si et seulement si** tous les points ci-dessous sont res
 
 ---
 
-## 🔐 Authentification et Accès
+## Authentification et Accès
 
 - Authentification présente (même simple)
 - Gestion minimale des droits ou rôles :
@@ -110,7 +110,7 @@ Le projet est validé **si et seulement si** tous les points ci-dessous sont res
 
 ---
 
-## 🎯 Périmètre Réaliste
+## Périmètre Réaliste
 
 - 2 à 3 fonctionnalités principales maximum
 - Parcours utilisateurs simples
@@ -118,15 +118,15 @@ Le projet est validé **si et seulement si** tous les points ci-dessous sont res
 
 ---
 
-## ✔️ Exemple d'application au projet Pokebuild
+## Exemple d'application au projet Pokebuild
 
-- ✔️ Consultation Pokédex (API externe)
-- ✔️ Création / sauvegarde d’équipe (CRUD)
-- ✔️ Gestion utilisateurs (admin)
-- ✔️ Authentification
-- ✔️ Séparation Front / API / DB
-- ✔️ Périmètre maîtrisé
+- Consultation Pokédex (API externe)
+- Création / sauvegarde d’équipe (CRUD)
+- Gestion utilisateurs (admin)
+- Authentification
+- Séparation Front / API / DB
+- Périmètre maîtrisé
 
 ---
 
-Projet structuré, démontrable et compatible certification. 🚀
+Projet structuré, démontrable et compatible certification.
