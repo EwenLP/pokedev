@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { fetchPokemonList, fetchPokemonDetails } from "../api/pokemonApi";
+import { fetchPokemonList, fetchPokemonDetails, fetchPokemonFrenchData } from "../api/pokemonApi";
 import PokemonCard from "../components/PokemonCard";
+import SearchBar from "../components/SearchBar";
 import PokemonDetail from "./PokemonDetail.jsx";
 
 export default function Pokedex() {
@@ -9,11 +10,8 @@ export default function Pokedex() {
 	const [selectedPokemon, setSelectedPokemon] = useState(null);
 	const [search, setSearch] = useState("");
 	const [currentPage, setCurrentPage] = useState(1);
+	const [filteredPokemon, setFilteredPokemon] = useState([]);
 	const pokemonPerPage = 12;
-	const filteredPokemon = pokemonList.filter((pokemon) =>
-		pokemon.name.toLowerCase().includes(search.toLowerCase())
-	);
-
 	const indexOfLastPokemon = currentPage * pokemonPerPage;
 	const indexOfFirstPokemon = indexOfLastPokemon - pokemonPerPage;
 
@@ -31,16 +29,20 @@ export default function Pokedex() {
 			const detailedPokemon = await Promise.all(
 				list.map(async (pokemon) => {
 					const details = await fetchPokemonDetails(pokemon.url);
+					const frenchData = await fetchPokemonFrenchData(details.id);
+
 					return {
-						id: details.id,
-						name: details.name,
-						image: details.sprites.other["official-artwork"].front_default,
-						types: details.types.map((t) => t.type.name),
+					id: details.id,
+					name: frenchData.name,
+					description: frenchData.description,
+					image: details.sprites.other["official-artwork"].front_default,
+					types: details.types.map((t) => t.type.name) // anglais
 					};
 				})
 			);
 
 			setPokemonList(detailedPokemon);
+			setFilteredPokemon(detailedPokemon);
 			setLoading(false);
 		}
 
@@ -56,16 +58,13 @@ export default function Pokedex() {
 	}
 
 	return (
-		<div className="max-w-screen-2xl mx-auto p-6 flex gap-8">
+		<div className="max-w-screen-2xl mx-auto p-6 flex justify-center gap-8">
 			{/* Pokedex */}
 			<div>
 				<h1 className="text-3xl font-bold mb-6">Pokédex</h1>
-				<input
-					type="text"
-					placeholder="Rechercher un Pokémon"
-					className="w-full mb-6 p-2 rounded border border-white text-white"
-					value={search}
-					onChange={(e) => setSearch(e.target.value)}
+				<SearchBar
+					pokemonList={pokemonList}
+					setFilteredPokemon={setFilteredPokemon}
 				/>
 				<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 					{currentPokemon.map((pokemon) => (

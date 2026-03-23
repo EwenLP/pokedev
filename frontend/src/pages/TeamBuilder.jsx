@@ -1,55 +1,36 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchPokemonDetails, fetchPokemonList } from "../api/pokemonApi";
+import { getToken } from "../utils/auth";
 
-const TEAM_STORAGE_KEY = "pokebuild_saved_teams";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
-function generateSimplePdf(teamName, team) {
-  const lines = [
-    `Pokebuild - ${teamName}`,
-    `Nombre de Pokémon : ${team.length}/6`,
-    "",
-    ...team.map(
-      (pokemon, index) => `${index + 1}. ${pokemon.name} - Types: ${pokemon.types.join(", ")}`
-    ),
-  ];
+function generateTeamPrintableHtml(teamName, team) {
+  const cards = team
+    .map(
+      (pokemon) => `
+      <article style="border:1px solid #ccc;border-radius:12px;padding:12px;text-align:center;break-inside:avoid;">
+        <img src="${pokemon.image}" alt="${pokemon.name}" style="width:120px;height:120px;object-fit:contain;display:block;margin:0 auto 8px;" />
+        <h3 style="margin:0 0 8px;text-transform:capitalize;">${pokemon.name}</h3>
+        <p style="margin:0;color:#444;">Types: ${pokemon.types.join(", ")}</p>
+      </article>`
+    )
+    .join("");
 
-  const escapeText = (text) => text.replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
-
-  const textCommands = lines
-    .map((line, index) => `BT /F1 12 Tf 50 ${780 - index * 20} Td (${escapeText(line)}) Tj ET`)
-    .join("\n");
-
-  const contentStream = `${textCommands}\n`;
-
-  const objects = [
-    "1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj",
-    "2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj",
-    "3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >> endobj",
-    "4 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj",
-    `5 0 obj << /Length ${contentStream.length} >> stream\n${contentStream}endstream endobj`,
-  ];
-
-  let pdf = "%PDF-1.4\n";
-  const offsets = [0];
-
-  objects.forEach((object) => {
-    offsets.push(pdf.length);
-    pdf += `${object}\n`;
-  });
-
-  const xrefOffset = pdf.length;
-  pdf += `xref\n0 ${objects.length + 1}\n`;
-  pdf += "0000000000 65535 f \n";
-
-  for (let i = 1; i <= objects.length; i += 1) {
-    pdf += `${String(offsets[i]).padStart(10, "0")} 00000 n \n`;
-  }
-
-  pdf += `trailer << /Size ${objects.length + 1} /Root 1 0 R >>\n`;
-  pdf += `startxref\n${xrefOffset}\n%%EOF`;
-
-  return new Blob([pdf], { type: "application/pdf" });
+  return `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>${teamName}</title>
+</head>
+<body style="font-family:Arial,sans-serif;padding:24px;">
+  <h1 style="margin:0 0 10px;">Pokebuild - ${teamName}</h1>
+  <p style="margin:0 0 20px;">Équipe de ${team.length}/6 Pokémon</p>
+  <section style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
+    ${cards}
+  </section>
+</body>
+</html>`;
 }
 
 export default function TeamBuilder() {
@@ -102,22 +83,36 @@ export default function TeamBuilder() {
     setSavedMessage("");
   }
 
-  function saveTeam() {
+  async function saveTeam() {
     if (team.length === 0) {
       setSavedMessage("Ajoutez au moins un Pokémon avant de sauvegarder.");
       return;
     }
 
-    const existingTeams = JSON.parse(localStorage.getItem(TEAM_STORAGE_KEY) ?? "[]");
-    const teamToSave = {
-      id: Date.now(),
-      name: teamName.trim() || "Mon équipe",
-      createdAt: new Date().toISOString(),
-      pokemons: team,
-    };
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/teams`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({
+          name: teamName.trim() || "Mon équipe",
+          pokemons: team,
+        }),
+      });
 
-    localStorage.setItem(TEAM_STORAGE_KEY, JSON.stringify([...existingTeams, teamToSave]));
-    setSavedMessage("Équipe sauvegardée avec succès.");
+      const data = await response.json();
+
+      if (!response.ok) {
+        setSavedMessage(data.message || "Erreur lors de la sauvegarde de l'équipe.");
+        return;
+      }
+
+      setSavedMessage("Équipe sauvegardée en base avec succès.");
+    } catch {
+      setSavedMessage("Impossible de sauvegarder l'équipe pour le moment.");
+    }
   }
 
   function generatePdf() {
@@ -127,15 +122,23 @@ export default function TeamBuilder() {
     }
 
     const currentTeamName = teamName.trim() || "Mon équipe";
-    const blob = generateSimplePdf(currentTeamName, team);
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${currentTeamName.toLowerCase().replace(/\s+/g, "-") || "mon-equipe"}.pdf`;
-    link.click();
-    URL.revokeObjectURL(url);
+    const printWindow = window.open("", "_blank", "width=1000,height=800");
 
-    setSavedMessage("PDF généré avec succès.");
+    if (!printWindow) {
+      setSavedMessage("Le navigateur a bloqué l'ouverture du PDF (pop-up). Autorisez les pop-up.");
+      return;
+    }
+
+    printWindow.document.open();
+    printWindow.document.write(generateTeamPrintableHtml(currentTeamName, team));
+    printWindow.document.close();
+
+    setTimeout(() => {
+      printWindow.focus();
+      printWindow.print();
+    }, 500);
+
+    setSavedMessage("Aperçu prêt : utilisez “Enregistrer en PDF” pour exporter avec les images.");
   }
 
   return (
@@ -205,10 +208,10 @@ export default function TeamBuilder() {
 
       <div className="flex flex-col md:flex-row gap-4 mt-8">
         <button className="px-4 py-2 bg-emerald-600 rounded" onClick={saveTeam}>
-          Sauvegarder l&apos;équipe
+          Sauvegarder l&apos;équipe (base)
         </button>
         <button className="px-4 py-2 bg-purple-600 rounded" onClick={generatePdf}>
-          Générer le PDF
+          Export PDF avec images
         </button>
       </div>
 
