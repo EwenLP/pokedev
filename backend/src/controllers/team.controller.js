@@ -23,29 +23,9 @@ const createTeam = async (req, res) => {
   try {
     const { name, description, pokemons } = req.body;
 
-    if (!Array.isArray(pokemons) || pokemons.length === 0 || pokemons.length > 6) {
-      return res.status(400).json({ message: "Une équipe doit contenir entre 1 et 6 Pokémon." });
-    }
-
-    const normalizedPokemons = pokemons.map((pokemon, index) => ({
-      pokemonApiId: Number(pokemon.id ?? pokemon.pokemonApiId),
-      pokemonName: pokemon.name ?? pokemon.pokemonName,
-      spriteUrl: pokemon.image ?? pokemon.spriteUrl ?? null,
-      slot: index + 1,
-    }));
-
-    const hasInvalidPokemon = normalizedPokemons.some(
-      (pokemon) => !pokemon.pokemonApiId || !pokemon.pokemonName
-    );
-
-    if (hasInvalidPokemon) {
-      return res.status(400).json({ message: "Les données Pokémon envoyées sont invalides." });
-    }
-
-    const hasDuplicate = new Set(normalizedPokemons.map((pokemon) => pokemon.pokemonApiId)).size !== normalizedPokemons.length;
-
-    if (hasDuplicate) {
-      return res.status(400).json({ message: "Une équipe ne peut pas contenir deux fois le même Pokémon." });
+    const validation = validatePokemons(pokemons);
+    if (!validation.valid) {
+      return res.status(400).json({ message: validation.message });
     }
 
     const team = await prisma.team.create({
@@ -54,7 +34,7 @@ const createTeam = async (req, res) => {
         name: (name || "Mon équipe").trim() || "Mon équipe",
         description: description?.trim() || null,
         teamPokemons: {
-          create: normalizedPokemons,
+          create: validation.normalizedPokemons,
         },
       },
       include: {
@@ -71,7 +51,113 @@ const createTeam = async (req, res) => {
   }
 };
 
+const updateTeam = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, description, pokemons } = req.body;
+
+    const existingTeam = await prisma.team.findUnique({
+      where: { id: Number(id) },
+    });
+
+    if (!existingTeam) {
+      return res.status(404).json({ message: "Équipe non trouvée." });
+    }
+
+    if (existingTeam.userId !== req.user.id) {
+      return res.status(403).json({ message: "Vous n'êtes pas autorisé à modifier cette équipe." });
+    }
+
+    const validation = validatePokemons(pokemons);
+    if (!validation.valid) {
+      return res.status(400).json({ message: validation.message });
+    }
+
+    // Supprimer les anciens pokémons et mettre à jour l'équipe
+    const team = await prisma.team.update({
+      where: { id: Number(id) },
+      data: {
+        name: (name || "Mon équipe").trim() || "Mon équipe",
+        description: description?.trim() || null,
+        teamPokemons: {
+          deleteMany: {},
+          create: validation.normalizedPokemons,
+        },
+      },
+      include: {
+        teamPokemons: {
+          orderBy: { slot: "asc" },
+        },
+      },
+    });
+
+    return res.status(200).json({ message: "Équipe mise à jour.", team });
+  } catch (error) {
+    console.error("Erreur updateTeam :", error);
+    return res.status(500).json({ message: "Erreur serveur lors de la mise à jour de l'équipe." });
+  }
+};
+
+const deleteTeam = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const existingTeam = await prisma.team.findUnique({
+      where: { id: Number(id) },
+    });
+
+    if (!existingTeam) {
+      return res.status(404).json({ message: "Équipe non trouvée." });
+    }
+
+    if (existingTeam.userId !== req.user.id) {
+      return res.status(403).json({ message: "Vous n'êtes pas autorisé à supprimer cette équipe." });
+    }
+
+    await prisma.team.delete({
+      where: { id: Number(id) },
+    });
+
+    return res.status(200).json({ message: "Équipe supprimée avec succès." });
+  } catch (error) {
+    console.error("Erreur deleteTeam :", error);
+    return res.status(500).json({ message: "Erreur serveur lors de la suppression de l'équipe." });
+  }
+};
+
+// Fonction utilitaire de validation
+function validatePokemons(pokemons) {
+  if (!Array.isArray(pokemons) || pokemons.length === 0 || pokemons.length > 6) {
+    return { valid: false, message: "Une équipe doit contenir entre 1 et 6 Pokémon." };
+  }
+
+  const normalizedPokemons = pokemons.map((pokemon, index) => ({
+    pokemonApiId: Number(pokemon.id ?? pokemon.pokemonApiId),
+    pokemonName: pokemon.name ?? pokemon.pokemonName,
+    spriteUrl: pokemon.image ?? pokemon.spriteUrl ?? null,
+    slot: index + 1,
+  }));
+
+  const hasInvalidPokemon = normalizedPokemons.some(
+    (pokemon) => !pokemon.pokemonApiId || !pokemon.pokemonName
+  );
+
+  if (hasInvalidPokemon) {
+    return { valid: false, message: "Les données Pokémon envoyées sont invalides." };
+  }
+
+  const hasDuplicate = new Set(normalizedPokemons.map((pokemon) => pokemon.pokemonApiId)).size !== normalizedPokemons.length;
+
+  if (hasDuplicate) {
+    return { valid: false, message: "Une équipe ne peut pas contenir deux fois le même Pokémon." };
+  }
+
+  return { valid: true, normalizedPokemons };
+}
+
 module.exports = {
   listMyTeams,
   createTeam,
+  updateTeam,
+  deleteTeam,
 };
