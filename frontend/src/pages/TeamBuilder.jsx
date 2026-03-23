@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchPokemonDetails, fetchPokemonList } from "../api/pokemonApi";
+import { fetchAllPokemon } from "../api/pokemonApi";
 import { getToken } from "../utils/auth";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -42,19 +42,14 @@ export default function TeamBuilder() {
 
   useEffect(() => {
     async function loadPokemon() {
-      const list = await fetchPokemonList();
+      const allPokemonData = await fetchAllPokemon();
 
-      const detailedPokemon = await Promise.all(
-        list.map(async (pokemon) => {
-          const details = await fetchPokemonDetails(pokemon.url);
-          return {
-            id: details.id,
-            name: details.name,
-            image: details.sprites.other["official-artwork"].front_default,
-            types: details.types.map((t) => t.type.name),
-          };
-        })
-      );
+      const detailedPokemon = allPokemonData.map((pokemon) => ({
+        id: pokemon.id,
+        name: pokemon.name,
+        image: pokemon.image,
+        types: pokemon.types,
+      }));
 
       setAllPokemon(detailedPokemon);
     }
