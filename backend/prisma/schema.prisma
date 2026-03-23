@@ -7,11 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  USER
-  ADMIN
-}
-
 model User {
   id           Int        @id @default(autoincrement())
   email        String     @unique
@@ -20,7 +15,6 @@ model User {
   role         Role       @default(USER)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
-
   favorites    Favorite[]
   teams        Team[]
 }
@@ -32,7 +26,6 @@ model Favorite {
   pokemonName  String
   spriteUrl    String?
   createdAt    DateTime @default(now())
-
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, pokemonApiId])
@@ -45,9 +38,10 @@ model Team {
   description  String?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   teamPokemons TeamPokemon[]
+
+  @@index([userId], map: "Team_userId_fkey")
 }
 
 model TeamPokemon {
@@ -58,8 +52,12 @@ model TeamPokemon {
   spriteUrl    String?
   slot         Int
   createdAt    DateTime @default(now())
-
   team         Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@unique([teamId, pokemonApiId])
+}
+
+enum Role {
+  USER
+  ADMIN
 }
