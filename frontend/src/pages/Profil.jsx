@@ -94,6 +94,19 @@ export default function ProfilePage() {
 
 // --- Vue connectée ---
 function LoggedInView({ user, formatDate, onLogout }) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
+
+  const filteredTeams = user.teams?.filter(team =>
+      team.name.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || [];
+
+  const hasManyTeams = user.teams?.length > 3;
+
+  const teamsToDisplay = searchTerm
+    ? filteredTeams
+    : (user.teams?.slice(0, 3) || []);
+
   return (
       <div className="space-y-6">
         <div className="bg-[#111c30] border border-gray-800 rounded-2xl p-6 flex items-center justify-between">
@@ -129,6 +142,58 @@ function LoggedInView({ user, formatDate, onLogout }) {
             <BadgeCard title="Équipe complète" icon="🏆" obtained={user.badges?.includes('full_team')} />
             <BadgeCard title="Maître Pokédex" icon="🎖️" obtained={user.badges?.includes('master')} />
           </div>
+        </div>
+
+        <div className="bg-[#111c30] border border-gray-800 rounded-2xl p-6">
+          <div className="flex justify-between items-center mb-5">
+            <h4 className="text-lg font-semibold">Mes Équipes</h4>
+            {hasManyTeams && (
+                <button
+                    onClick={() => setShowSearch(!showSearch)}
+                    className={`p-2 rounded-lg transition-colors ${showSearch ? 'bg-cyan-900/40 text-cyan-400' : 'hover:bg-gray-800 text-gray-400'}`}
+                    title="Rechercher une équipe"
+                >
+                  🔍
+                </button>
+            )}
+          </div>
+
+          {showSearch && hasManyTeams && (
+              <div className="mb-6">
+                <input
+                    type="text"
+                    placeholder="Rechercher par nom d'équipe..."
+                    className="w-full bg-[#0a1120] border border-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400 transition-colors"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+          )}
+
+          {teamsToDisplay.length > 0 ? (
+              <div className="space-y-4">
+                {teamsToDisplay.map((team) => (
+                    <div key={team.id} className="bg-[#0a1120] border border-gray-800 rounded-xl p-4">
+                      <div className="flex justify-between items-center mb-3">
+                        <h5 className="font-bold text-cyan-400">{team.name}</h5>
+                        <span className="text-xs text-gray-500">{formatDate(team.createdAt)}</span>
+                      </div>
+                      <div className="flex gap-2 overflow-x-auto pb-2">
+                        {team.teamPokemons.map((tp) => (
+                            <div key={tp.id} className="flex-shrink-0 bg-[#111c30] border border-gray-700 rounded-lg p-2 text-center w-20">
+                              <img src={tp.spriteUrl} alt={tp.pokemonName} className="w-12 h-12 mx-auto" />
+                              <p className="text-[10px] truncate text-gray-300 capitalize">{tp.pokemonName}</p>
+                            </div>
+                        ))}
+                      </div>
+                    </div>
+                ))}
+              </div>
+          ) : (
+              <p className="text-gray-500 text-center py-4">
+                {searchTerm ? 'Aucune équipe ne correspond à votre recherche.' : "Vous n'avez pas encore d'équipe."}
+              </p>
+          )}
         </div>
 
         <div className="space-y-3">

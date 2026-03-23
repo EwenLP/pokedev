@@ -185,6 +185,16 @@ const getProfile = async (req, res) => {
             id: true,
             name: true,
             createdAt: true,
+            teamPokemons: {
+              orderBy: { slot: "asc" },
+              select: {
+                id: true,
+                pokemonApiId: true,
+                pokemonName: true,
+                spriteUrl: true,
+                slot: true,
+              },
+            },
           },
         },
       },
