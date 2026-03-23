@@ -30,9 +30,6 @@ export default function HomePage() {
             to="/team"
             className="bg-[#111c30] border border-gray-800 rounded-2xl p-5 flex items-center gap-4 hover:border-cyan-800 hover:bg-[#152240] transition-all group"
           >
-            <div className="bg-cyan-900/40 p-3 rounded-xl border border-cyan-800">
-              <span className="text-cyan-400 text-xl">👥</span>
-            </div>
             <div>
               <p className="font-bold text-white group-hover:text-cyan-400 transition-colors">
                 Créer mon Équipe
