@@ -55,7 +55,7 @@ export default function SearchBar({ pokemonList, setFilteredPokemon }) {
 		<input
 			type="text"
 			placeholder="Nom du Pokémon"
-			className="p-2 rounded border border-white text-white bg-slate-800"
+			className="p-2 rounded border border-white text-white bg-slate-800 w-full sm:w-auto"
 			value={searchName}
 			onChange={(e) => setSearchName(e.target.value)}
 		/>
@@ -63,13 +63,13 @@ export default function SearchBar({ pokemonList, setFilteredPokemon }) {
 		<input
 			type="number"
 			placeholder="ID"
-			className="p-2 rounded border border-white text-white bg-slate-800 w-24"
+			className="p-2 rounded border border-white text-white bg-slate-800 w-full sm:w-24"
 			value={searchId}
 			onChange={(e) => setSearchId(e.target.value)}
 		/>
 
 		<select
-			className="p-2 rounded border border-white text-white bg-slate-800"
+			className="p-2 rounded border border-white text-white bg-slate-800 w-full sm:w-auto"
 			value={selectedType}
 			onChange={(e) => setSelectedType(e.target.value)}
 		>
@@ -83,7 +83,7 @@ export default function SearchBar({ pokemonList, setFilteredPokemon }) {
 		</select>
 
 		<select
-			className="p-2 rounded border border-white text-white bg-slate-800"
+			className="p-2 rounded border border-white text-white bg-slate-800 w-full sm:w-auto"
 			value={sort}
 			onChange={(e) => setSort(e.target.value)}
 		>

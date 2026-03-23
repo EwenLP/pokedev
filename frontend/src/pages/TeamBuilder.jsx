@@ -333,14 +333,7 @@ function TeamSummary({ team }) {
           <span style={{ color: "#22d3ee", fontSize: 18 }}>◎</span>
           <span style={{ fontWeight: 700, fontSize: 16, color: "#f1f5f9" }}>Résumé de l'équipe</span>
         </div>
-        <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(4, 1fr)",
-              gap: 16,
-              textAlign: "center",
-            }}
-        >
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
           {[
             { icon: "♥", color: "#f87171", value: avg("hp"), label: "PV moyens" },
             { icon: "⚔", color: "#fb923c", value: avg("attack"), label: "Attaque moy." },
@@ -367,31 +360,11 @@ function AddPokemonModal({ selectablePokemon, onAdd, onClose }) {
 
   return (
       <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "#000000bb",
-            zIndex: 100,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: 24,
-          }}
+          className="fixed inset-0 bg-black/70 z-100 flex items-center justify-center p-6"
           onClick={onClose}
       >
         <div
-            style={{
-              background: "#0d1f35",
-              border: "1px solid #1e3a5a",
-              borderRadius: 20,
-              padding: 24,
-              width: "100%",
-              maxWidth: 480,
-              maxHeight: "80vh",
-              display: "flex",
-              flexDirection: "column",
-              gap: 16,
-            }}
+            className="bg-[#0d1f35] border border-[#1e3a5a] rounded-2xl p-6 w-full max-w-[480px] max-h-[80vh] flex flex-col gap-4 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -583,19 +556,9 @@ export default function TeamBuilder() {
   }
 
   return (
-      <div
-          style={{
-            minHeight: "100vh",
-            background: "#060e1a",
-            color: "#f1f5f9",
-            fontFamily: "'Inter', 'Segoe UI', sans-serif",
-            padding: "32px 24px",
-            maxWidth: 960,
-            margin: "0 auto",
-          }}
-      >
+      <div className="min-h-screen bg-[#060e1a] text-[#f1f5f9] px-6 py-8 max-w-[960px] mx-auto">
         {/* Header */}
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 32 }}>
+        <div className="flex flex-col sm:flex-row items-start justify-between gap-6 mb-8">
           <div>
             {editingName ? (
                 <input
@@ -612,7 +575,8 @@ export default function TeamBuilder() {
                       fontSize: 32,
                       fontWeight: 800,
                       outline: "none",
-                      width: 300,
+                      width: "100%",
+                      maxWidth: 300,
                       padding: "0 0 4px",
                     }}
                 />
@@ -660,13 +624,7 @@ export default function TeamBuilder() {
         </div>
 
         {/* Grid */}
-        <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: 16,
-            }}
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => {
             const pokemon = team[i] || null;
             return (
@@ -690,10 +648,11 @@ export default function TeamBuilder() {
         <TeamSummary team={team} />
 
         {/* Actions */}
-        <div style={{ display: "flex", gap: 12, marginTop: 24, flexWrap: "wrap" }}>
+        <div className="flex flex-col sm:flex-row gap-3 mt-6 flex-wrap">
           {team.length < 6 && (
               <button
                   onClick={() => setShowModal(true)}
+                  className="w-full sm:w-auto"
                   style={{
                     padding: "11px 22px",
                     background: "#22d3ee22",
@@ -713,6 +672,7 @@ export default function TeamBuilder() {
           )}
           <button
               onClick={saveTeam}
+              className="w-full sm:w-auto"
               style={{
                 padding: "11px 22px",
                 background: "#059669",
@@ -731,6 +691,7 @@ export default function TeamBuilder() {
           </button>
           <button
               onClick={generatePdf}
+              className="w-full sm:w-auto"
               style={{
                 padding: "11px 22px",
                 background: "#7c3aed",

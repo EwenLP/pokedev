@@ -81,16 +81,27 @@ export default function Pokedex() {
   }
 
   return (
-    <div className="max-w-screen-2xl mx-auto p-6 flex justify-center gap-8">
-      <div>
-        <h1 className="text-3xl font-bold mb-6">Pokédex</h1>
+    <div className="max-w-screen-2xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* Filtres et Titre */}
+      <div className="lg:col-span-2">
+        <h1 className="text-3xl font-bold mb-6 text-center lg:text-left">Pokédex</h1>
 
         <SearchBar
           pokemonList={pokemonList}
           setFilteredPokemon={setFilteredPokemon}
         />
+      </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {/* Détails (S'affiche entre Filtres et Pokédex sur mobile, sur le côté sur desktop) */}
+      <div className="lg:col-start-3 lg:row-start-1 lg:row-span-2 flex flex-col items-center">
+        <div className="lg:sticky lg:top-24 w-full">
+          <PokemonDetail pokemon={selectedPokemon} />
+        </div>
+      </div>
+
+      {/* Pokédex (Grille) */}
+      <div className="lg:col-span-2">
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
           {currentPokemon.map((pokemon) => (
             <PokemonCard
               key={pokemon.id}
@@ -122,10 +133,6 @@ export default function Pokedex() {
             Suivant
           </button>
         </div>
-      </div>
-
-      <div className="flex items-center">
-        <PokemonDetail pokemon={selectedPokemon} />
       </div>
     </div>
   );
