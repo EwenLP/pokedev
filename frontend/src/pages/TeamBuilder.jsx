@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState, useRef } from "react";
+import { useLocation, useSearchParams, useNavigate } from "react-router-dom";
 import { fetchAllPokemon } from "../api/pokemonApi";
 import { getToken } from "../utils/auth";
+import { createTeam, updateTeam } from "../api/teamApi";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -461,6 +463,11 @@ function AddPokemonModal({ selectablePokemon, onAdd, onClose }) {
 }
 
 export default function TeamBuilder() {
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const editTeamId = searchParams.get("edit");
+  
   const [teamName, setTeamName] = useState("Mon Équipe");
   const [allPokemon, setAllPokemon] = useState([]);
   const [team, setTeam] = useState([]);
@@ -472,18 +479,37 @@ export default function TeamBuilder() {
   useEffect(() => {
     async function loadPokemon() {
       const allPokemonData = await fetchAllPokemon();
-      setAllPokemon(
-          allPokemonData.map((pokemon) => ({
-            id: pokemon.id,
-            name: pokemon.nameFr,
-            image: pokemon.image,
-            types: pokemon.types,
-            stats: pokemon.stats || null,
-          }))
-      );
+      const mapped = allPokemonData.map((pokemon) => ({
+        id: pokemon.id,
+        name: pokemon.nameFr,
+        image: pokemon.image,
+        types: pokemon.types,
+        stats: pokemon.stats || null,
+      }));
+      setAllPokemon(mapped);
+
+      // Si on est en mode édition, on charge l'équipe
+      if (editTeamId && location.state?.team) {
+        const teamData = location.state.team;
+        setTeamName(teamData.name);
+        
+        // On mappe les teamPokemons vers la structure attendue, 
+        // en récupérant les types/stats depuis 'mapped'
+        const restoredTeam = teamData.teamPokemons.map(tp => {
+          const fullData = mapped.find(p => p.id === tp.pokemonApiId);
+          return fullData || {
+            id: tp.pokemonApiId,
+            name: tp.pokemonName,
+            image: tp.spriteUrl,
+            types: [],
+            stats: null
+          };
+        });
+        setTeam(restoredTeam);
+      }
     }
     loadPokemon();
-  }, []);
+  }, [editTeamId, location.state]);
 
   useEffect(() => {
     if (editingName && nameInputRef.current) nameInputRef.current.focus();
@@ -511,20 +537,29 @@ export default function TeamBuilder() {
       return;
     }
     try {
-      const response = await fetch(`${API_BASE_URL}/api/teams`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getToken()}`,
-        },
-        body: JSON.stringify({ name: teamName.trim() || "Mon Équipe", pokemons: team }),
-      });
+      const teamData = { name: teamName.trim() || "Mon Équipe", pokemons: team };
+      let response;
+      
+      if (editTeamId) {
+        response = await updateTeam(editTeamId, teamData);
+      } else {
+        response = await createTeam(teamData);
+      }
+
       const data = await response.json();
       if (!response.ok) {
         setMessage({ text: data.message || "Erreur lors de la sauvegarde.", type: "error" });
         return;
       }
-      setMessage({ text: "✓ Équipe sauvegardée avec succès !", type: "success" });
+      setMessage({ 
+        text: editTeamId ? "✓ Équipe mise à jour avec succès !" : "✓ Équipe sauvegardée avec succès !", 
+        type: "success" 
+      });
+      
+      if (editTeamId) {
+        // Rediriger vers le profil après un court délai pour voir le message
+        setTimeout(() => navigate("/profil"), 1500);
+      }
     } catch {
       setMessage({ text: "Impossible de sauvegarder l'équipe.", type: "error" });
     }
@@ -601,7 +636,7 @@ export default function TeamBuilder() {
                 </h1>
             )}
             <p style={{ margin: "4px 0 0", color: "#475569", fontSize: 14 }}>
-              Compose ton équipe de 6 Pokémon
+              {editTeamId ? "Modifie ton équipe de 6 Pokémon" : "Compose ton équipe de 6 Pokémon"}
             </p>
           </div>
 
@@ -692,7 +727,7 @@ export default function TeamBuilder() {
               onMouseEnter={(e) => (e.currentTarget.style.background = "#047857")}
               onMouseLeave={(e) => (e.currentTarget.style.background = "#059669")}
           >
-            Sauvegarder l'équipe
+            {editTeamId ? "Mettre à jour l'équipe" : "Sauvegarder l'équipe"}
           </button>
           <button
               onClick={generatePdf}

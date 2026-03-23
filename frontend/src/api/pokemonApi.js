@@ -1,6 +1,6 @@
 const API_URL = "https://pokeapi.co/api/v2";
 const CACHE_EXPIRATION = 24 * 60 * 60 * 1000; // 24 hours
-const POKEDEX_CACHE_KEY = "pokedex_all_pokemon";
+const POKEDEX_CACHE_KEY = "pokedex_all_pokemon_v2";
 
 // Cache mémoire pour éviter de parser le localStorage à chaque appel
 let memoryCache = null;
@@ -81,7 +81,13 @@ export async function fetchAllPokemon(limit = 151) {
 				descriptionFr,
 				genusFr,
 				image: details.sprites.other["official-artwork"].front_default,
-				types: details.types.map((t) => t.type.name)
+				types: details.types.map((t) => t.type.name),
+				stats: {
+					hp: details.stats.find((s) => s.stat.name === "hp")?.base_stat,
+					attack: details.stats.find((s) => s.stat.name === "attack")?.base_stat,
+					defense: details.stats.find((s) => s.stat.name === "defense")?.base_stat,
+					speed: details.stats.find((s) => s.stat.name === "speed")?.base_stat
+				}
 			};
 		})
 	);

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getToken, logout } from '../utils/auth';
 import { getFavorites } from "../api/favoriteApi";
+import { deleteTeam } from "../api/teamApi";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -100,11 +101,12 @@ return (
 		<main className="max-w-4xl mx-auto px-4 py-8">
 		<h2 className="text-4xl font-bold text-cyan-400 mb-10">Mon Profil</h2>
 		{isLoggedIn && user ? (
-			<LoggedInView
+ 		<LoggedInView
 				user={user}
 				favorites={favorites}
 				formatDate={formatDate}
 				onLogout={handleLogout}
+				refreshData={fetchUserData}
 			/>
 		) : (
 			<LoggedOutView />
@@ -115,9 +117,29 @@ return (
 }
 
 // --- Vue connectée ---
-function LoggedInView({ user, favorites, formatDate, onLogout }) {
+function LoggedInView({ user, favorites, formatDate, onLogout, refreshData }) {
 const [searchTerm, setSearchTerm] = useState('');
 const [showSearch, setShowSearch] = useState(false);
+const navigate = useNavigate();
+
+const handleDeleteTeam = async (teamId) => {
+	if (window.confirm("Es-tu sûr de vouloir supprimer cette équipe ?")) {
+		try {
+			const res = await deleteTeam(teamId);
+			if (res.ok) {
+				refreshData();
+			} else {
+				alert("Erreur lors de la suppression de l'équipe.");
+			}
+		} catch (error) {
+			console.error("Erreur suppression équipe:", error);
+		}
+	}
+};
+
+const handleEditTeam = (team) => {
+	navigate(`/team?edit=${team.id}`, { state: { team } });
+};
 
 const filteredTeams = user.teams?.filter(team =>
 	team.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -220,9 +242,25 @@ return (
 			<div key={team.id} className="bg-[#0a1120] border border-gray-800 rounded-xl p-4">
 				<div className="flex justify-between items-center mb-3">
 				<h5 className="font-bold text-cyan-400">{team.name}</h5>
-				<span className="text-xs text-gray-500">
-					{formatDate(team.createdAt)}
-				</span>
+				<div className="flex items-center gap-3">
+					<button 
+						onClick={() => handleEditTeam(team)}
+						className="text-xs text-gray-400 hover:text-cyan-400 transition-colors"
+						title="Modifier l'équipe"
+					>
+						✏️
+					</button>
+					<button 
+						onClick={() => handleDeleteTeam(team.id)}
+						className="text-xs text-gray-400 hover:text-red-400 transition-colors"
+						title="Supprimer l'équipe"
+					>
+						🗑️
+					</button>
+					<span className="text-xs text-gray-500 ml-2">
+						{formatDate(team.createdAt)}
+					</span>
+				</div>
 				</div>
 
 				<div className="flex gap-2 overflow-x-auto pb-2">
