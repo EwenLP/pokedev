@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { Icon } from '@iconify/react';
+
 export default function HomePage() {
   return (
     <div className="text-white font-sans">
@@ -16,7 +18,12 @@ export default function HomePage() {
             className="bg-[#111c30] border border-gray-800 rounded-2xl p-5 flex items-center gap-4 hover:border-cyan-800 hover:bg-[#152240] transition-all group"
           >
             <div className="bg-cyan-900/40 p-3 rounded-xl border border-cyan-800">
-              <span className="text-cyan-400 text-xl">📖</span>
+				<span className="text-cyan-400 text-xl">
+					<Icon
+						icon={"ph:book-open"}
+						className="w-6 h-6 text-[#61dafbaa]"
+					/>
+				</span>
             </div>
             <div>
               <p className="font-bold text-white group-hover:text-cyan-400 transition-colors">
@@ -30,7 +37,15 @@ export default function HomePage() {
             to="/team"
             className="bg-[#111c30] border border-gray-800 rounded-2xl p-5 flex items-center gap-4 hover:border-cyan-800 hover:bg-[#152240] transition-all group"
           >
-            <div>
+			<div className="bg-cyan-900/40 p-3 rounded-xl border border-cyan-800">
+				<span className="text-cyan-400 text-xl">
+				<Icon
+					icon={"ph:user-plus"}
+					className="w-6 h-6 text-[#61dafbaa]"
+				/>
+				</span>
+			</div>
+			<div>
               <p className="font-bold text-white group-hover:text-cyan-400 transition-colors">
                 Créer mon Équipe
               </p>
