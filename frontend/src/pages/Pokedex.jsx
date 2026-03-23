@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom"; // Ajout pour la navigation
 import { fetchAllPokemon } from "../api/pokemonApi";
+import { logout } from "../utils/auth";
 import PokemonCard from "../components/PokemonCard";
 import SearchBar from "../components/SearchBar";
 import PokemonDetail from "../components/PokemonDetail.jsx";
@@ -48,11 +49,10 @@ export default function Pokedex() {
 		setCurrentPage(1);
 	}, [search]);
 
-	// Fonction à adapter selon ton système d'authentification (ex: suppression de token, redirection)
 	const handleLogout = () => {
 		console.log("Déconnexion de l'utilisateur...");
-		// localStorage.removeItem("token");
-		// window.location.href = "/login";
+		logout();
+		window.location.href = "/login";
 	};
 
 	if (loading) {

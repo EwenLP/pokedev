@@ -7,6 +7,7 @@ import Login from "./pages/Login.jsx";
 
 import PokemonDetail from "./components/PokemonDetail.jsx";
 import Profil from "./pages/Profil.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 function App() {
 	return (
@@ -16,8 +17,22 @@ function App() {
 					<Route path="/" element={<HomePage />} />
 					<Route path="/pokedex" element={<Pokedex />} />
 					<Route path="/pokemon/:id" element={<PokemonDetail />} />
-					<Route path="/team" element={<TeamBuilder />} />
-					<Route path="/profil" element={<Profil />} />
+					<Route
+						path="/team"
+						element={
+							<ProtectedRoute>
+								<TeamBuilder />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/profil"
+						element={
+							<ProtectedRoute>
+								<Profil />
+							</ProtectedRoute>
+						}
+					/>
 					<Route path="/login" element={<Login />} />
 				</Routes>
 			</div>
