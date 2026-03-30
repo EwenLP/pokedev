@@ -6,6 +6,11 @@ import TypeBadge from "../components/TypeBadge";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
+function escapeHtml(text) {
+  const map = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" };
+  return String(text).replace(/[&<>"']/g, (m) => map[m]);
+}
+
 function generateTeamPrintableHtml(teamName, team) {
   const safeTeamName = escapeHtml(teamName);
   const cards = team
@@ -107,8 +112,6 @@ function PokemonSlot({ pokemon, index, onRemove, onAdd, selectablePokemon, selec
     );
   }
 
-  const gradient = getTypeGradient(pokemon.types);
-
   return (
       <div
           style={{
@@ -174,10 +177,9 @@ function PokemonSlot({ pokemon, index, onRemove, onAdd, selectablePokemon, selec
           ✕
         </button>
 
-        {/* Image area with gradient */}
+        {/* Image area */}
         <div
             style={{
-              background: gradient,
               height: 140,
               display: "flex",
               alignItems: "center",
