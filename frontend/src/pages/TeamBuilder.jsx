@@ -107,8 +107,6 @@ function PokemonSlot({ pokemon, index, onRemove, onAdd, selectablePokemon, selec
     );
   }
 
-  const gradient = getTypeGradient(pokemon.types);
-
   return (
       <div
           style={{
@@ -174,10 +172,9 @@ function PokemonSlot({ pokemon, index, onRemove, onAdd, selectablePokemon, selec
           ✕
         </button>
 
-        {/* Image area with gradient */}
+        {/* Image area */}
         <div
             style={{
-              background: gradient,
               height: 140,
               display: "flex",
               alignItems: "center",
