@@ -20,7 +20,6 @@ export default function Register() {
     setIsLoading(true);
 
     try {
-      console.log("Tentative d'inscription à :", `${API_BASE_URL}/api/auth/register`);
       const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: "POST",
         headers: {
@@ -46,7 +45,7 @@ export default function Register() {
         navigate("/team", { replace: true });
       }, 1500);
     } catch (error) {
-      console.error("Erreur d'inscription détaillée :", error);
+      if (import.meta.env.DEV) console.error("Erreur d'inscription :", error);
       setIsError(true);
       setMessage("Impossible de contacter le serveur.");
     } finally {

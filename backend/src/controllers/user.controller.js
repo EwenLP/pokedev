@@ -1,22 +1,36 @@
 const prisma = require("../config/prisma");
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const getAllUsers = async (req, res) => {
   try {
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+    const skip = (page - 1) * limit;
 
-    return res.status(200).json(users);
+    const [users, total] = await Promise.all([
+      prisma.user.findMany({
+        skip,
+        take: limit,
+        select: {
+          id: true,
+          email: true,
+          username: true,
+          role: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      }),
+      prisma.user.count(),
+    ]);
+
+    return res.status(200).json({
+      data: users,
+      pagination: { page, limit, total, pages: Math.ceil(total / limit) },
+    });
   } catch (error) {
     console.error("Erreur getAllUsers :", error);
     return res.status(500).json({
@@ -75,6 +89,14 @@ const updateUser = async (req, res) => {
       return res.status(400).json({
         message: "Le rôle doit être USER ou ADMIN.",
       });
+    }
+
+    if (email && (typeof email !== "string" || email.length > 255 || !EMAIL_REGEX.test(email.trim()))) {
+      return res.status(400).json({ message: "Format d'email invalide." });
+    }
+
+    if (username && (typeof username !== "string" || username.length < 3 || username.length > 50)) {
+      return res.status(400).json({ message: "Le username doit contenir entre 3 et 50 caractères." });
     }
 
     if (email && email !== existingUser.email) {
