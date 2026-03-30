@@ -93,8 +93,8 @@ export default function Pokedex() {
       </div>
 
       {/* Détails (S'affiche entre Filtres et Pokédex sur mobile, sur le côté sur desktop) */}
-      <div className="lg:col-start-3 lg:row-start-1 lg:row-span-2 flex flex-col items-center">
-        <div className="lg:sticky lg:top-24 w-full">
+      <div className="lg:col-start-3 lg:row-start-2 lg:row-span-2 flex flex-col items-center">
+        <div className="lg:sticky lg:top-24">
           <PokemonDetail pokemon={selectedPokemon} />
         </div>
       </div>

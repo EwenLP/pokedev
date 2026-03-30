@@ -1,64 +1,10 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import { useLocation, useSearchParams, useNavigate } from "react-router-dom";
 import { fetchAllPokemon } from "../api/pokemonApi";
-import { getToken } from "../utils/auth";
 import { createTeam, updateTeam } from "../api/teamApi";
+import TypeBadge from "../components/TypeBadge";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
-
-// Type color mapping
-const TYPE_COLORS = {
-  feu: { bg: "#c84c00", text: "#ffb347" },
-  eau: { bg: "#1a4a7a", text: "#7dd3fc" },
-  plante: { bg: "#1a4a1a", text: "#86efac" },
-  électrik: { bg: "#2a2a00", text: "#facc15" },
-  electrik: { bg: "#2a2a00", text: "#facc15" },
-  vol: { bg: "#1a1a3a", text: "#a5b4fc" },
-  poison: { bg: "#2a0a2a", text: "#c084fc" },
-  psy: { bg: "#3a0a1a", text: "#f9a8d4" },
-  combat: { bg: "#3a1a00", text: "#fb923c" },
-  roche: { bg: "#2a2a1a", text: "#d4d4aa" },
-  sol: { bg: "#3a2a00", text: "#fde68a" },
-  glace: { bg: "#0a2a3a", text: "#bae6fd" },
-  dragon: { bg: "#1a0a3a", text: "#818cf8" },
-  spectre: { bg: "#1a0a2a", text: "#a78bfa" },
-  acier: { bg: "#1a1a2a", text: "#94a3b8" },
-  normal: { bg: "#2a2a2a", text: "#d1d5db" },
-  ténèbres: { bg: "#0a0a1a", text: "#6b7280" },
-  fée: { bg: "#3a0a2a", text: "#f9a8d4" },
-  insecte: { bg: "#1a2a00", text: "#a3e635" },
-};
-
-// Pokemon card background gradients based on type
-const TYPE_GRADIENTS = {
-  feu: "linear-gradient(135deg, #7c2d12 0%, #9a3412 50%, #431407 100%)",
-  eau: "linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #082f49 100%)",
-  plante: "linear-gradient(135deg, #14532d 0%, #166534 50%, #052e16 100%)",
-  électrik: "linear-gradient(135deg, #713f12 0%, #854d0e 50%, #422006 100%)",
-  electrik: "linear-gradient(135deg, #713f12 0%, #854d0e 50%, #422006 100%)",
-  vol: "linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #0f0e2a 100%)",
-  poison: "linear-gradient(135deg, #3b0764 0%, #4c1d95 50%, #1e0a3c 100%)",
-  psy: "linear-gradient(135deg, #4c0519 0%, #881337 50%, #27020d 100%)",
-  combat: "linear-gradient(135deg, #431407 0%, #7c2d12 50%, #27080b 100%)",
-  normal: "linear-gradient(135deg, #1c1917 0%, #292524 50%, #0c0a09 100%)",
-  default: "linear-gradient(135deg, #1e293b 0%, #334155 50%, #0f172a 100%)",
-};
-
-function getTypeGradient(types) {
-  if (!types || types.length === 0) return TYPE_GRADIENTS.default;
-  const key = types[0].toLowerCase();
-  return TYPE_GRADIENTS[key] || TYPE_GRADIENTS.default;
-}
-
-function getTypeStyle(type) {
-  const key = type.toLowerCase();
-  return TYPE_COLORS[key] || { bg: "#2a2a2a", text: "#d1d5db" };
-}
-
-function escapeHtml(text) {
-  const map = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" };
-  return String(text).replace(/[&<>"']/g, (m) => map[m]);
-}
 
 function generateTeamPrintableHtml(teamName, team) {
   const safeTeamName = escapeHtml(teamName);
@@ -110,26 +56,6 @@ function generateTeamPrintableHtml(teamName, team) {
   </div>
 </body>
 </html>`;
-}
-
-function TypeBadge({ type }) {
-  const style = getTypeStyle(type);
-  return (
-      <span
-          style={{
-            background: style.bg,
-            color: style.text,
-            padding: "2px 10px",
-            borderRadius: "999px",
-            fontSize: "12px",
-            fontWeight: 600,
-            letterSpacing: "0.02em",
-            border: `1px solid ${style.text}33`,
-          }}
-      >
-      {type.charAt(0).toUpperCase() + type.slice(1)}
-    </span>
-  );
 }
 
 function StatRow({ icon, value, label }) {
