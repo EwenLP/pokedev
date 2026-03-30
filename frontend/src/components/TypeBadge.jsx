@@ -5,7 +5,7 @@ export default function TypeBadge({ type }) {
 	const label = typeTranslations[type] || type;
 
 	return (
-		<span className={`${color} px-3 py-1 rounded text-sm capitalize text-white`}>
+		<span className={`${color} px-3 py-1 rounded text-xs lg:text-sm capitalize text-white`}>
 		{label}
 		</span>
 	);

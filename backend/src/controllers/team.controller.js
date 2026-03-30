@@ -23,6 +23,15 @@ const createTeam = async (req, res) => {
   try {
     const { name, description, pokemons } = req.body;
 
+    const teamName = (name || "Mon équipe").trim() || "Mon équipe";
+    if (teamName.length > 100) {
+      return res.status(400).json({ message: "Le nom d'équipe ne doit pas dépasser 100 caractères." });
+    }
+    const teamDescription = description?.trim() || null;
+    if (teamDescription && teamDescription.length > 500) {
+      return res.status(400).json({ message: "La description ne doit pas dépasser 500 caractères." });
+    }
+
     const validation = validatePokemons(pokemons);
     if (!validation.valid) {
       return res.status(400).json({ message: validation.message });
@@ -31,8 +40,8 @@ const createTeam = async (req, res) => {
     const team = await prisma.team.create({
       data: {
         userId: req.user.id,
-        name: (name || "Mon équipe").trim() || "Mon équipe",
-        description: description?.trim() || null,
+        name: teamName,
+        description: teamDescription,
         teamPokemons: {
           create: validation.normalizedPokemons,
         },
@@ -68,6 +77,15 @@ const updateTeam = async (req, res) => {
       return res.status(403).json({ message: "Vous n'êtes pas autorisé à modifier cette équipe." });
     }
 
+    const teamName = (name || "Mon équipe").trim() || "Mon équipe";
+    if (teamName.length > 100) {
+      return res.status(400).json({ message: "Le nom d'équipe ne doit pas dépasser 100 caractères." });
+    }
+    const teamDescription = description?.trim() || null;
+    if (teamDescription && teamDescription.length > 500) {
+      return res.status(400).json({ message: "La description ne doit pas dépasser 500 caractères." });
+    }
+
     const validation = validatePokemons(pokemons);
     if (!validation.valid) {
       return res.status(400).json({ message: validation.message });
@@ -77,8 +95,8 @@ const updateTeam = async (req, res) => {
     const team = await prisma.team.update({
       where: { id: Number(id) },
       data: {
-        name: (name || "Mon équipe").trim() || "Mon équipe",
-        description: description?.trim() || null,
+        name: teamName,
+        description: teamDescription,
         teamPokemons: {
           deleteMany: {},
           create: validation.normalizedPokemons,

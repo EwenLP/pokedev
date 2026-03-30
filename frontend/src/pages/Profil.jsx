@@ -172,13 +172,6 @@ return (
 		✏️
 		</button>
 	</div>
-
-	<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-		<StatCard label="Pokémon vus" value={user.favoritesCount || 0} />
-		<StatCard label="Équipes" value={user.teamsCount || 0} />
-		<StatCard label="Type favori" value={user.favoriteType || 'Aucun'} isText />
-	</div>
-
 	<div className="bg-[#111c30] border border-gray-800 rounded-2xl p-6">
 		<h4 className="text-lg font-semibold mb-5">Mes Favoris</h4>
 

@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
-const path = require("path"); // <-- L'import de 'path' est bien en haut
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+const path = require("path");
 require("dotenv").config();
 
 const authRoutes = require('./routes/auth.routes');
@@ -10,8 +12,45 @@ const favoriteRoutes = require("./routes/favorite.routes");
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+// Sécurité : headers HTTP
+app.use(helmet());
+
+// Sécurité : CORS
+const corsOrigin = process.env.CLIENT_URL || (process.env.NODE_ENV === "production" ? undefined : "http://localhost:5173");
+if (!corsOrigin) {
+  throw new Error("CLIENT_URL est requis en production.");
+}
+app.use(cors({
+  origin: corsOrigin,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+}));
+
+// Sécurité : limite la taille des requêtes
+app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ extended: true, limit: "1mb" }));
+
+// Sécurité : rate limiting global
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Trop de requêtes, réessayez plus tard." },
+});
+app.use("/api/", globalLimiter);
+
+// Sécurité : rate limiting strict sur l'auth
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Trop de tentatives, réessayez dans 15 minutes." },
+});
+app.use("/api/auth/login", authLimiter);
+app.use("/api/auth/register", authLimiter);
 
 // ==========================================
 // 1. TES ROUTES API (Backend)
@@ -30,7 +69,7 @@ app.use("/api/teams", teamRoutes);
 app.use("/api/favorites", favoriteRoutes);
 
 // Gestion des erreurs 404 UNIQUEMENT pour les routes qui commencent par /api/
-app.use("/api/*", (req, res) => {
+app.use("/api/:path", (req, res) => {
   res.status(404).json({
     message: "Route API introuvable.",
   });
@@ -44,7 +83,7 @@ app.use("/api/*", (req, res) => {
 app.use(express.static(path.join(__dirname, '../public')));
 
 // Gère le React Router : pour toutes les autres requêtes (qui ne sont pas des /api), on affiche ton site React
-app.get('*', (req, res) => {
+app.get('{*path}', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 

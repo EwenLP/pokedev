@@ -23,6 +23,8 @@ export function setToken(token) {
 export function logout() {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(CURRENT_TEAM_KEY);
+  localStorage.removeItem("pokedex_all_pokemon");
+  localStorage.removeItem("pokedex_all_pokemon_v2");
 }
 
 export function isAuthenticated() {
