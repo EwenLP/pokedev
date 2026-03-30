@@ -15,7 +15,7 @@ export default function PokemonDetail({ pokemon }) {
 		<img
 			src={pokemon.image}
 			alt={pokemon.name}
-			className="mx-auto w-64"
+			className="mx-auto w-64 max-w-full h-auto"
 		/>
 
 		<div className="bg-slate-600 rounded-xl p-6">
