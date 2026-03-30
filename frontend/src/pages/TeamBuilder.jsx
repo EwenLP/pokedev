@@ -6,6 +6,11 @@ import TypeBadge from "../components/TypeBadge";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
+function escapeHtml(text) {
+  const map = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" };
+  return String(text).replace(/[&<>"']/g, (m) => map[m]);
+}
+
 function generateTeamPrintableHtml(teamName, team) {
   const safeTeamName = escapeHtml(teamName);
   const cards = team
