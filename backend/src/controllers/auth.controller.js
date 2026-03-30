@@ -9,6 +9,9 @@ const argonOptions = {
   parallelism: 1,
 };
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#+\-_.])[A-Za-z\d@$!%*?&#+\-_.]{8,}$/;
+
 
 const tryVerifyPassword = async (storedPasswordHash, rawPassword) => {
   if (!storedPasswordHash || !rawPassword) {
@@ -34,7 +37,7 @@ const generateToken = (user) => {
     },
     process.env.JWT_SECRET,
     {
-      expiresIn: "7d",
+      expiresIn: "1h",
     }
   );
 };
@@ -48,6 +51,24 @@ const register = async (req, res) => {
     if (!normalizedEmail || !normalizedUsername || !password) {
       return res.status(400).json({
         message: "Email, username et mot de passe sont obligatoires.",
+      });
+    }
+
+    if (normalizedEmail.length > 255 || !EMAIL_REGEX.test(normalizedEmail)) {
+      return res.status(400).json({
+        message: "Format d'email invalide.",
+      });
+    }
+
+    if (normalizedUsername.length < 3 || normalizedUsername.length > 50) {
+      return res.status(400).json({
+        message: "Le username doit contenir entre 3 et 50 caractères.",
+      });
+    }
+
+    if (!PASSWORD_REGEX.test(password)) {
+      return res.status(400).json({
+        message: "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.",
       });
     }
 
@@ -226,6 +247,14 @@ const updateProfile = async (req, res) => {
 
     const normalizedEmail = email ? email.trim().toLowerCase() : undefined;
     const normalizedUsername = username ? username.trim() : undefined;
+
+    if (normalizedEmail && (normalizedEmail.length > 255 || !EMAIL_REGEX.test(normalizedEmail))) {
+      return res.status(400).json({ message: "Format d'email invalide." });
+    }
+
+    if (normalizedUsername && (normalizedUsername.length < 3 || normalizedUsername.length > 50)) {
+      return res.status(400).json({ message: "Le username doit contenir entre 3 et 50 caractères." });
+    }
 
     if (normalizedEmail || normalizedUsername) {
       const existingUser = await prisma.user.findFirst({

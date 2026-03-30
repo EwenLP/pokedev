@@ -55,14 +55,20 @@ function getTypeStyle(type) {
   return TYPE_COLORS[key] || { bg: "#2a2a2a", text: "#d1d5db" };
 }
 
+function escapeHtml(text) {
+  const map = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" };
+  return String(text).replace(/[&<>"']/g, (m) => map[m]);
+}
+
 function generateTeamPrintableHtml(teamName, team) {
+  const safeTeamName = escapeHtml(teamName);
   const cards = team
       .map(
           (pokemon) => `
       <article style="border:1px solid #334155;border-radius:16px;padding:16px;text-align:center;break-inside:avoid;background:#1e293b;">
-        <img src="${pokemon.image}" alt="${pokemon.name}" style="width:120px;height:120px;object-fit:contain;display:block;margin:0 auto 8px;" />
-        <h3 style="margin:0 0 8px;text-transform:capitalize;color:#f1f5f9;font-size:18px;">${pokemon.name}</h3>
-        <p style="margin:0 0 8px;color:#94a3b8;">Types: ${pokemon.types.join(", ")}</p>
+        <img src="${escapeHtml(pokemon.image)}" alt="${escapeHtml(pokemon.name)}" style="width:120px;height:120px;object-fit:contain;display:block;margin:0 auto 8px;" />
+        <h3 style="margin:0 0 8px;text-transform:capitalize;color:#f1f5f9;font-size:18px;">${escapeHtml(pokemon.name)}</h3>
+        <p style="margin:0 0 8px;color:#94a3b8;">Types: ${pokemon.types.map(t => escapeHtml(t)).join(", ")}</p>
         ${
               pokemon.stats
                   ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:12px;color:#cbd5e1;">
@@ -84,11 +90,11 @@ function generateTeamPrintableHtml(teamName, team) {
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>${teamName}</title>
+  <title>${safeTeamName}</title>
   <style>body{background:#0f172a;color:#f1f5f9;font-family:'Segoe UI',sans-serif;padding:24px;}</style>
 </head>
 <body>
-  <h1 style="margin:0 0 4px;color:#22d3ee;">${teamName}</h1>
+  <h1 style="margin:0 0 4px;color:#22d3ee;">${safeTeamName}</h1>
   <p style="margin:0 0 20px;color:#94a3b8;">Équipe de ${team.length}/6 Pokémon</p>
   <section style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;">
     ${cards}
