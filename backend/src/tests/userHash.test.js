@@ -1,8 +1,12 @@
-import { describe, test, expect } from "vitest";
-import argon2 from "argon2";
+import { describe, test, expect, afterAll } from "vitest";
+import * as argon2 from "argon2";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
+
+afterAll(async () => {
+  await prisma.$disconnect();
+});
 
 describe("Sécurité - Hash du mot de passe", () => {
   test("le mot de passe est bien hashé avec Argon2 et valide", async () => {
@@ -12,9 +16,7 @@ describe("Sécurité - Hash du mot de passe", () => {
 
     expect(user).toBeDefined();
     expect(user.passwordHash).toBeDefined();
-
     expect(user.passwordHash).not.toBe("User123!");
-
     expect(user.passwordHash.startsWith("$argon2")).toBe(true);
 
     const isValid = await argon2.verify(user.passwordHash, "User123!");
