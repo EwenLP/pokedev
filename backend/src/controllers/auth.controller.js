@@ -1,6 +1,6 @@
 const argon2 = require("argon2");
-const jwt = require("jsonwebtoken");
 const prisma = require("../config/prisma");
+const { EMAIL_REGEX, PASSWORD_REGEX, generateToken } = require("../utils/authUtils");
 
 const argonOptions = {
   type: argon2.argon2id,
@@ -8,10 +8,6 @@ const argonOptions = {
   memoryCost: 65536,
   parallelism: 1,
 };
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#+\-_.])[A-Za-z\d@$!%*?&#+\-_.]{8,}$/;
-
 
 const tryVerifyPassword = async (storedPasswordHash, rawPassword) => {
   if (!storedPasswordHash || !rawPassword) {
@@ -22,24 +18,8 @@ const tryVerifyPassword = async (storedPasswordHash, rawPassword) => {
     const isArgonValid = await argon2.verify(storedPasswordHash, rawPassword);
     return { isValid: isArgonValid, needsRehash: false };
   } catch {
-    const isLegacyPlainTextValid = storedPasswordHash === rawPassword;
-    return { isValid: isLegacyPlainTextValid, needsRehash: isLegacyPlainTextValid };
+    return { isValid: false, needsRehash: false };
   }
-};
-
-const generateToken = (user) => {
-  return jwt.sign(
-    {
-      id: user.id,
-      email: user.email,
-      username: user.username,
-      role: user.role,
-    },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "1h",
-    }
-  );
 };
 
 const register = async (req, res) => {
@@ -293,7 +273,7 @@ const updateProfile = async (req, res) => {
     return res.status(200).json({
       message: "Profil mis à jour avec succès.",
       user: updatedUser,
-      token: newToken, 
+      token: newToken,
     });
   } catch (error) {
     console.error("Erreur updateProfile :", error);
