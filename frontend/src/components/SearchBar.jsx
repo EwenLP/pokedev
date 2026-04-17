@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { typeTranslations } from "../utils/Types";
+import { filterPokemons } from '../utils/filterPokemons';
 
 export default function SearchBar({ pokemonList, setFilteredPokemon }) {
 	const [searchName, setSearchName] = useState("");
@@ -8,45 +9,9 @@ export default function SearchBar({ pokemonList, setFilteredPokemon }) {
 	const [sort, setSort] = useState("id-asc");
 
 	useEffect(() => {
-
-		let filtered = [...pokemonList];
-
-		if (searchName) {
-			filtered = filtered.filter((pokemon) =>
-				pokemon.name.toLowerCase().includes(searchName.toLowerCase())
-			);
-		}
-
-		if (searchId) {
-			filtered = filtered.filter(
-				(pokemon) => pokemon.id === Number(searchId)
-			);
-		}
-
-		if (selectedType) {
-			filtered = filtered.filter((pokemon) =>
-				pokemon.types.includes(selectedType)
-			);
-		}
-
-		if (sort === "id-asc") {
-			filtered.sort((a, b) => a.id - b.id);
-		}
-
-		if (sort === "id-desc") {
-			filtered.sort((a, b) => b.id - a.id);
-		}
-
-		if (sort === "name-asc") {
-			filtered.sort((a, b) => a.name.localeCompare(b.name));
-		}
-
-		if (sort === "name-desc") {
-			filtered.sort((a, b) => b.name.localeCompare(a.name));
-		}
-
-		setFilteredPokemon(filtered);
-
+		setFilteredPokemon(
+			filterPokemons(pokemonList, { searchName, searchId, selectedType, sort })
+		);
 	}, [pokemonList, searchName, searchId, selectedType, sort, setFilteredPokemon]);
 
 	return (
