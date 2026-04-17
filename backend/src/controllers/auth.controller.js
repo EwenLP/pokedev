@@ -18,8 +18,7 @@ const tryVerifyPassword = async (storedPasswordHash, rawPassword) => {
     const isArgonValid = await argon2.verify(storedPasswordHash, rawPassword);
     return { isValid: isArgonValid, needsRehash: false };
   } catch {
-    const isLegacyPlainTextValid = storedPasswordHash === rawPassword;
-    return { isValid: isLegacyPlainTextValid, needsRehash: isLegacyPlainTextValid };
+    return { isValid: false, needsRehash: false };
   }
 };
 
