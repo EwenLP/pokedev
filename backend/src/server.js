@@ -53,7 +53,7 @@ app.use("/api/auth/login", authLimiter);
 app.use("/api/auth/register", authLimiter);
 
 // ==========================================
-// 1. TES ROUTES API (Backend)
+// 1. ROUTES API (Backend)
 // ==========================================
 
 // J'ai changé '/' en '/api' pour que ton API ne bloque pas l'affichage de React sur l'accueil
