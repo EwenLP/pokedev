@@ -8,6 +8,7 @@ import Register from "./pages/Register.jsx";
 
 import PokemonDetail from "./components/PokemonDetail.jsx";
 import Profil from "./pages/Profil.jsx";
+import TeamComparison from "./pages/TeamComparison.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Navbar from "./components/NavBar.jsx";
 
@@ -25,6 +26,14 @@ function App() {
 						element={
 							<ProtectedRoute>
 								<TeamBuilder />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/compare"
+						element={
+							<ProtectedRoute>
+								<TeamComparison />
 							</ProtectedRoute>
 						}
 					/>

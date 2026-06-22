@@ -39,6 +39,10 @@ export default function Navbar() {
           Mon Équipe
         </NavLink>
 
+        <NavLink to="/compare" active={isActive('/compare')}>
+          Comparer
+        </NavLink>
+
         <Link
           to="/profil"
           className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${
