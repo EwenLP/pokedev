@@ -35,8 +35,8 @@ export function filterPokemons(pokemonList, { searchName, searchId, selectedType
 
   if (sort === "id-asc")   filtered.sort((a, b) => a.id - b.id);
   if (sort === "id-desc")  filtered.sort((a, b) => b.id - a.id);
-  if (sort === "name-desc") filtered.sort((a, b) => a.name.localeCompare(b.name));
-  if (sort === "name-asc")filtered.sort((a, b) => b.name.localeCompare(a.name));
+  if (sort === "name-asc") filtered.sort((a, b) => a.name.localeCompare(b.name));
+  if (sort === "name-desc")filtered.sort((a, b) => b.name.localeCompare(a.name));
 
   return filtered;
 }

@@ -44,8 +44,7 @@ export default function () {
   // 4. Tentative d'accès au Profil (ProtectedRoute)
   group('04_Protected_Profil', function () {
     const res = http.get(`${BASE_URL}/profil`);
-    // Ici, si l'utilisateur n'est pas connecté, React Router redirige 
-    // côté client, mais la requête HTTP initiale peut varier.
+    // Ici, si l'utilisateur n'est pas connecté, React Router redirige vers login
     check(res, { 'profil accessible ou redirigé': (r) => r.status === 200 });
   });
 
