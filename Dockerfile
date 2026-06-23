@@ -1,39 +1,39 @@
-# ==========================================
-# ÉTAPE 1 : Build du Frontend (React)
-# ==========================================
-FROM node:18-alpine AS frontend-builder
-WORKDIR /app/frontend
+# ── Stage 1 : Build du frontend React ────────────────────────────────────────
+FROM node:20-alpine AS frontend-builder
+WORKDIR /frontend
 
-# Copie des fichiers de configuration et installation
 COPY frontend/package*.json ./
-RUN npm install
+RUN npm ci
 
-# Copie du code et build de l'application
-COPY frontend/ ./
+COPY frontend/ .
+
+# Injecté par Dokploy en Build Arg
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 RUN npm run build
 
+# ── Stage 2 : Backend Express + frontend statique ─────────────────────────────
+FROM node:20-alpine AS runner
+WORKDIR /app
 
-# ==========================================
-# ÉTAPE 2 : Setup du Backend et de l'environnement final
-# ==========================================
-FROM node:18-alpine
-WORKDIR /app/backend
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-# Copie des fichiers de configuration et installation
 COPY backend/package*.json ./
-RUN npm install
+COPY backend/prisma ./prisma/
 
-# Copie de tout le code du backend
-COPY backend/ ./
+RUN npm ci --omit=dev && npx prisma generate
 
-# Génération du client Prisma (Requis pour la BDD)
-RUN npx prisma generate
+COPY backend/src ./src/
 
-# On récupère le build React de l'étape 1 pour le mettre dans un dossier "public"
-COPY --from=frontend-builder /app/frontend/dist ./public
+# Le build React atterrit dans public/ → servi par Express (server.js)
+COPY --from=frontend-builder /frontend/dist ./public/
 
-# On expose le port sur lequel Express écoute
+USER appuser
+
 EXPOSE 3000
 
-# Commande pour démarrer le serveur
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget -qO- http://localhost:3000/ || exit 1
+
 CMD ["node", "src/server.js"]
