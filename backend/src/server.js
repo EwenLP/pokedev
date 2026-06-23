@@ -9,6 +9,7 @@ const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes')
 const teamRoutes = require('./routes/team.routes');
 const favoriteRoutes = require("./routes/favorite.routes");
+const adminRoutes = require('./routes/admin.routes');
 
 const app = express();
 
@@ -53,7 +54,7 @@ app.use("/api/auth/login", authLimiter);
 app.use("/api/auth/register", authLimiter);
 
 // ==========================================
-// 1. TES ROUTES API (Backend)
+// 1. ROUTES API
 // ==========================================
 
 // J'ai changé '/' en '/api' pour que ton API ne bloque pas l'affichage de React sur l'accueil
@@ -67,6 +68,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/teams", teamRoutes);
 app.use("/api/favorites", favoriteRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Gestion des erreurs 404 UNIQUEMENT pour les routes qui commencent par /api/
 app.use("/api/:path", (req, res) => {
@@ -76,7 +78,7 @@ app.use("/api/:path", (req, res) => {
 });
 
 // ==========================================
-// 2. TON FRONTEND REACT
+// 2. FRONTEND REACT
 // ==========================================
 
 // On dit à Express de servir les fichiers statiques du dossier "public" (générés par le Dockerfile)
