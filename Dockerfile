@@ -1,12 +1,15 @@
 # ==========================================
 # ÉTAPE 1 : Build du Frontend (React)
 # ==========================================
-FROM node:18-alpine AS frontend-builder
+FROM node:20-alpine AS frontend-builder
 WORKDIR /app/frontend
 
 # Copie des fichiers de configuration et installation
 COPY frontend/package*.json ./
 RUN npm install
+
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
 
 # Copie du code et build de l'application
 COPY frontend/ ./
@@ -16,7 +19,7 @@ RUN npm run build
 # ==========================================
 # ÉTAPE 2 : Setup du Backend et de l'environnement final
 # ==========================================
-FROM node:18-alpine
+FROM node:20-alpine
 WORKDIR /app/backend
 
 # Copie des fichiers de configuration et installation
