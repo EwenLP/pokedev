@@ -1,6 +1,6 @@
-# Pokebuild
+# Pokedev
 
-**Pokebuild** est une application web permettant aux dresseurs de consulter le Pokédex et de concevoir leur équipe stratégique de 6 Pokémon.
+**Pokedev** est une application web permettant aux dresseurs de consulter le Pokédex et de concevoir leur équipe stratégique de 6 Pokémon.
 
 ---
 
