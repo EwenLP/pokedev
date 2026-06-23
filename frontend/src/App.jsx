@@ -7,6 +7,7 @@ import Login from "./pages/Login.jsx";
 import AdminLogin from "./pages/AdminLogin.jsx";
 import Register from "./pages/Register.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
+import AdminRoute from "./components/AdminRoute.jsx";
 
 import PokemonDetail from "./components/PokemonDetail.jsx";
 import Profil from "./pages/Profil.jsx";
@@ -40,7 +41,11 @@ function App() {
 					/>
 					<Route path="/login" element={<Login />} />
 					<Route path="/admin/login" element={<AdminLogin />} />
-					<Route path="/admin" element={<AdminPage />} />
+					<Route path="/admin" element={
+  						<AdminRoute>
+    						<AdminPage />
+  						</AdminRoute>
+					} />
 					<Route path="/register" element={<Register />} />
 				</Routes>
 			</div>

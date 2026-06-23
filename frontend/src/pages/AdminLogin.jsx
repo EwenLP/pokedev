@@ -1,112 +1,33 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { setToken } from "../utils/auth";
-
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:3000";
+import { Link } from "react-router-dom";
+import { useLogin } from "../hooks/useLogin";
 
 export default function AdminLogin() {
-  const navigate = useNavigate();
-
-  const [identifier, setIdentifier] = useState("");
-  const [password, setPassword] = useState("");
-
-  const [message, setMessage] = useState("");
-  const [isError, setIsError] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    setMessage("");
-    setIsError(false);
-    setIsLoading(true);
-
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/auth/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            identifier,
-            password,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setIsError(true);
-        setMessage(data.message || "Erreur de connexion admin.");
-        return;
-      }
-
-      if (data.user.role !== "ADMIN") {
-        setIsError(true);
-        setMessage("Accès réservé aux administrateurs.");
-        return;
-      }
-
-      // sauvegarde token
-      if (data.token) {
-        setToken(data.token);
-      }
-
-      // optionnel : stocker user
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      setMessage("Connexion admin réussie.");
-
-      // redirection admin
-      navigate("/admin", { replace: true });
-    } catch (error) {
-      if (import.meta.env.DEV) {
-        console.error("Erreur connexion admin :", error);
-      }
-
-      setIsError(true);
-      setMessage("Impossible de contacter le serveur.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const {
+    identifier, setIdentifier,
+    password, setPassword,
+    message, isError, isLoading,
+    handleSubmit,
+  } = useLogin({
+    redirectTo: "/admin",
+    requiredRole: "ADMIN",
+    roleErrorMsg: "Accès réservé aux administrateurs.",
+  });
 
   return (
     <main className="min-h-[calc(100vh-120px)] bg-gradient-to-br from-slate-950 via-slate-900 to-red-950 text-white flex items-center justify-center p-6">
       <section className="w-full max-w-md rounded-2xl border border-red-700/40 bg-slate-900/70 backdrop-blur-xl shadow-2xl shadow-red-900/30 p-8">
-        
-        {/* HEADER ADMIN */}
+
         <div className="mb-6 text-center">
-          <img
-            src="/pokeball.png"
-            alt="Admin Pokeball"
-            className="w-14 h-14 mx-auto mb-3 drop-shadow"
-          />
-
-          <h1 className="text-3xl font-bold tracking-tight text-red-400">
-            Espace Admin
-          </h1>
-
-          <p className="text-slate-300 mt-2 text-sm">
-            Connexion réservée aux administrateurs.
-          </p>
+          <img src="/pokeball.png" alt="Admin Pokeball" className="w-14 h-14 mx-auto mb-3 drop-shadow" />
+          <h1 className="text-3xl font-bold tracking-tight text-red-400">Espace Admin</h1>
+          <p className="text-slate-300 mt-2 text-sm">Connexion réservée aux administrateurs.</p>
         </div>
 
-        {/* FORM */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          
           <div>
-            <label
-              htmlFor="identifier"
-              className="block text-sm font-medium text-slate-200 mb-2"
-            >
+            <label htmlFor="identifier" className="block text-sm font-medium text-slate-200 mb-2">
               Email ou username
             </label>
-
             <input
               id="identifier"
               type="text"
@@ -119,13 +40,9 @@ export default function AdminLogin() {
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-slate-200 mb-2"
-            >
+            <label htmlFor="password" className="block text-sm font-medium text-slate-200 mb-2">
               Mot de passe
             </label>
-
             <input
               id="password"
               type="password"
@@ -146,26 +63,19 @@ export default function AdminLogin() {
           </button>
         </form>
 
-        {/* LINK USER LOGIN */}
         <p className="mt-6 text-center text-sm text-slate-400">
           Connexion utilisateur ?{" "}
-          <Link
-            to="/login"
-            className="text-indigo-400 hover:text-indigo-300 font-medium"
-          >
+          <Link to="/login" className="text-indigo-400 hover:text-indigo-300 font-medium">
             Se connecter
           </Link>
         </p>
 
-        {/* MESSAGE */}
         {message && (
-          <p
-            className={`mt-5 text-sm rounded-lg px-3 py-2 ${
-              isError
-                ? "bg-red-500/15 text-red-200 border border-red-400/40"
-                : "bg-emerald-500/15 text-emerald-200 border border-emerald-400/40"
-            }`}
-          >
+          <p className={`mt-5 text-sm rounded-lg px-3 py-2 ${
+            isError
+              ? "bg-red-500/15 text-red-200 border border-red-400/40"
+              : "bg-emerald-500/15 text-emerald-200 border border-emerald-400/40"
+          }`}>
             {message}
           </p>
         )}

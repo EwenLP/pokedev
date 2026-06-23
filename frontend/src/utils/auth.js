@@ -43,3 +43,22 @@ export function setCurrentTeamId(id) {
 
   localStorage.setItem(CURRENT_TEAM_KEY, String(id));
 }
+
+export function getTokenPayload() {
+  const token = getToken();
+  if (!token) return null;
+  try {
+    const payload = token.split(".")[1];
+    return JSON.parse(atob(payload));
+  } catch {
+    return null;
+  }
+}
+
+export function getUserRole() {
+  return getTokenPayload()?.role ?? null;
+}
+
+export function isAdmin() {
+  return getUserRole() === "ADMIN";
+}
