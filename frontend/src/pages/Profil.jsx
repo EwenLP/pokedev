@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getToken, logout, setToken } from '../utils/auth';
-import { getFavorites } from "../api/favoriteApi";
+import { getFavorites, removeFavorite } from "../api/favoriteApi";
 import { deleteTeam } from "../api/teamApi";
+import { Icon } from '@iconify/react';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -302,12 +303,30 @@ function EditProfileModal({ user, avatarUrl, onSave, onClose }) {
 }
 
 // --- Vue connectée ---
+function LoggedInView({ user, favorites, formatDate, onLogout, refreshData }) {
+	const [searchTerm, setSearchTerm] = useState('');
+	const [showSearch, setShowSearch] = useState(false);
+	const navigate = useNavigate();
 function LoggedInView({ user, favorites, formatDate, onLogout, refreshData, avatarUrl, onProfileSave }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [showSearch, setShowSearch] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const navigate = useNavigate();
 
+	const handleDeleteTeam = async (teamId) => {
+		if (window.confirm("Es-tu sûr de vouloir supprimer cette équipe ?")) {
+			try {
+				const res = await deleteTeam(teamId);
+				if (res.ok) {
+					refreshData();
+				} else {
+					alert("Erreur lors de la suppression de l'équipe.");
+				}
+			} catch (error) {
+				console.error("Erreur suppression équipe:", error);
+			}
+		}
+	};
   const handleDeleteTeam = async (teamId) => {
     if (window.confirm("Es-tu sûr de vouloir supprimer cette équipe ?")) {
       try {
@@ -322,7 +341,20 @@ function LoggedInView({ user, favorites, formatDate, onLogout, refreshData, avat
     navigate(`/team?edit=${team.id}`, { state: { team } });
   };
 
-  const filteredTeams = user.teams?.filter(team =>
+  const handleDeleteFavorite = async (pokemonApiId) => {
+		if (window.confirm("Retirer ce Pokémon de tes favoris ?")) {
+			try {
+				const res = await removeFavorite(pokemonApiId);
+				if (res.ok) {
+					refreshData();
+				} else {
+					alert("Erreur lors de la suppression du favori.");
+				}
+			} catch (error) {
+				console.error("Erreur suppression favori:", error);
+			}
+		}
+	};const filteredTeams = user.teams?.filter(team =>
     team.name.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
@@ -386,6 +418,64 @@ function LoggedInView({ user, favorites, formatDate, onLogout, refreshData, avat
           </div>
         )}
       </div>
+	return (
+		<div className="space-y-6">
+		<div className="bg-[#111c30] border border-gray-800 rounded-2xl p-6 flex items-center justify-between">
+			<div className="flex items-center gap-5">
+			<div className="w-16 h-16 bg-cyan-900/50 rounded-full flex items-center justify-center text-xl font-bold text-cyan-400 border-2 border-cyan-700">
+				{user.username?.substring(0, 2).toUpperCase() || 'PK'}
+			</div>
+			<div>
+				<h3 className="text-xl font-bold">{user.username}</h3>
+				<p className="text-gray-400 text-sm flex items-center gap-2">
+				<span>✉️</span> {user.email}
+				</p>
+				<p className="text-gray-500 text-sm flex items-center gap-2">
+				<span>📅</span> Membre depuis le {formatDate(user.createdAt)}
+				</p>
+			</div>
+			</div>
+			<button className="p-3 hover:bg-gray-800 rounded-full transition-colors text-gray-400 hover:text-white">
+			✏️
+			</button>
+		</div>
+		<div className="bg-[#111c30] border border-gray-800 rounded-2xl p-6">
+			<h4 className="text-lg font-semibold mb-5">Mes Favoris</h4>
+
+			{favorites.length === 0 ? (
+			<p className="text-gray-400 text-sm">
+				Tu n'as pas encore de Pokémon favoris.
+			</p>
+			) : (
+			<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+				{favorites.map((fav) => (
+					<div
+						key={fav.id}
+						className="relative bg-slate-800 p-4 rounded-xl text-center"
+					>
+						<button
+							onClick={() => handleDeleteFavorite(fav.pokemonApiId)}
+							className="absolute top-2 right-2"
+							title="Retirer des favoris"
+						>
+							<Icon
+								icon={"ic:round-close"}
+								className="w-6 h-6 text-[#61dafbaa] hover:text-red-400 hover:scale-125 transition-all"
+							/>
+						</button>
+						<img
+							src={fav.spriteUrl}
+							alt={fav.pokemonName}
+							className="w-20 mx-auto"
+						/>
+						<p className="mt-2 text-sm font-medium">
+							{fav.pokemonName}
+						</p>
+					</div>
+				))}
+			</div>
+			)}
+		</div>
 
       {/* Équipes */}
       <div className="bg-[#111c30] border border-gray-800 rounded-2xl p-6">

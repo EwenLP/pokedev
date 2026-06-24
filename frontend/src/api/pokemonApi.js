@@ -18,6 +18,7 @@ function getFromCache(key) {
 	} catch (e) {
 		localStorage.removeItem(key);
 	}
+
 	return null;
 }
 
