@@ -71,6 +71,10 @@ export default function Navbar() {
             Profil
           </NavLink>
 
+           <NavLink to="/compare" active={isActive('/compare')}>
+            Comparer
+          </NavLink>
+
           {isLoggedIn ? (
             <button
               onClick={handleLogout}
