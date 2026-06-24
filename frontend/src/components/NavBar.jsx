@@ -31,7 +31,7 @@ export default function Navbar() {
     <header className="relative max-w-7xl mx-auto py-6 px-4 z-50">
       <div className="flex justify-between items-center">
         <Link to="/" className="text-2xl font-bold text-cyan-400">
-          PokéDex
+          PokeDev
         </Link>
 
         <button
