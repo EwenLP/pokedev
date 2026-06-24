@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getToken, logout, setToken } from '../utils/auth';
-import { getFavorites, removeFavorite } from "../api/favoriteApi";
+import { getFavorites } from "../api/favoriteApi";
 import { deleteTeam } from "../api/teamApi";
 import { Icon } from '@iconify/react';
 
@@ -42,10 +42,21 @@ export default function ProfilePage() {
           'Authorization': `Bearer ${token}`
         },
       });
-      if (!userRes.ok) { handleLogout(); return; }
+
+      if (!userRes.ok) { 
+        handleLogout(); 
+        return; 
+      }
+
       const userData = await userRes.json();
+
       let favoritesData = [];
-      try { favoritesData = await getFavorites(); } catch (e) { console.warn("Erreur favoris :", e); }
+
+      try {
+        favoritesData = await getFavorites();
+      } catch (e) {
+        console.warn("Erreur favoris :", e);
+      }
       setUser({ ...userData, favoritesCount: favoritesData.length });
       setFavorites(favoritesData);
       setIsLoggedIn(true);
@@ -303,37 +314,24 @@ function EditProfileModal({ user, avatarUrl, onSave, onClose }) {
 }
 
 // --- Vue connectée ---
-function LoggedInView({ user, favorites, formatDate, onLogout, refreshData }) {
-	const [searchTerm, setSearchTerm] = useState('');
-	const [showSearch, setShowSearch] = useState(false);
-	const navigate = useNavigate();
 function LoggedInView({ user, favorites, formatDate, onLogout, refreshData, avatarUrl, onProfileSave }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [showSearch, setShowSearch] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const navigate = useNavigate();
 
-	const handleDeleteTeam = async (teamId) => {
-		if (window.confirm("Es-tu sûr de vouloir supprimer cette équipe ?")) {
-			try {
-				const res = await deleteTeam(teamId);
-				if (res.ok) {
-					refreshData();
-				} else {
-					alert("Erreur lors de la suppression de l'équipe.");
-				}
-			} catch (error) {
-				console.error("Erreur suppression équipe:", error);
-			}
-		}
-	};
   const handleDeleteTeam = async (teamId) => {
     if (window.confirm("Es-tu sûr de vouloir supprimer cette équipe ?")) {
       try {
         const res = await deleteTeam(teamId);
-        if (res.ok) { refreshData(); }
-        else { alert("Erreur lors de la suppression de l'équipe."); }
-      } catch (error) { console.error("Erreur suppression équipe:", error); }
+        if (res.ok) {
+			refreshData();
+		} else {
+			alert("Erreur lors de la suppression de l'équipe.");
+		}
+      } catch (error) {
+		  console.error("Erreur suppression équipe:", error);
+	  }
     }
   };
 
@@ -354,7 +352,9 @@ function LoggedInView({ user, favorites, formatDate, onLogout, refreshData, avat
 				console.error("Erreur suppression favori:", error);
 			}
 		}
-	};const filteredTeams = user.teams?.filter(team =>
+	};
+
+	const filteredTeams = user.teams?.filter(team =>
     team.name.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
@@ -449,33 +449,33 @@ function LoggedInView({ user, favorites, formatDate, onLogout, refreshData, avat
 			) : (
 			<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
 				{favorites.map((fav) => (
-					<div
-						key={fav.id}
-						className="relative bg-slate-800 p-4 rounded-xl text-center"
-					>
-						<button
-							onClick={() => handleDeleteFavorite(fav.pokemonApiId)}
-							className="absolute top-2 right-2"
-							title="Retirer des favoris"
-						>
-							<Icon
-								icon={"ic:round-close"}
-								className="w-6 h-6 text-[#61dafbaa] hover:text-red-400 hover:scale-125 transition-all"
-							/>
-						</button>
-						<img
-							src={fav.spriteUrl}
-							alt={fav.pokemonName}
-							className="w-20 mx-auto"
-						/>
-						<p className="mt-2 text-sm font-medium">
-							{fav.pokemonName}
-						</p>
+							<div
+								key={fav.id}
+								className="relative bg-slate-800 p-4 rounded-xl text-center"
+							>
+								<button
+									onClick={() => handleDeleteFavorite(fav.pokemonApiId)}
+									className="absolute top-2 right-2"
+									title="Retirer des favoris"
+								>
+									<Icon
+										icon={"ic:round-close"}
+										className="w-6 h-6 text-[#61dafbaa] hover:text-red-400 hover:scale-125 transition-all"
+									/>
+								</button>
+								<img
+									src={fav.spriteUrl}
+									alt={fav.pokemonName}
+									className="w-20 mx-auto"
+								/>
+								<p className="mt-2 text-sm font-medium">
+									{fav.pokemonName}
+								</p>
+							</div>
+						))}
 					</div>
-				))}
+				)}
 			</div>
-			)}
-		</div>
 
       {/* Équipes */}
       <div className="bg-[#111c30] border border-gray-800 rounded-2xl p-6">
