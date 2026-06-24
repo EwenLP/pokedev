@@ -6,7 +6,7 @@ export default function HomePage() {
     <div className="text-white font-sans">
       <main className="flex flex-col items-center justify-center h-[calc(100vh-120px)] px-4">
         <h1 className="text-6xl font-extrabold text-cyan-400 mb-4 tracking-tight">
-          PokéDex
+          PokeDev
         </h1>
         <p className="text-gray-400 text-center mb-12 max-w-sm">
           Explorez tous les Pokémon et créez votre équipe de rêve
