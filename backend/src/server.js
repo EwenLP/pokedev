@@ -90,7 +90,32 @@ app.get('{*path}', (req, res) => {
 });
 
 // ==========================================
-// 3. LANCEMENT DU SERVEUR
+// 3. GESTIONNAIRE ERREURS GLOBAL
+// ==========================================
+
+// Gestionnaire d'erreurs global — toujours en dernier
+app.use((err, req, res, next) => {
+  // Log complet uniquement en dev
+  if (process.env.NODE_ENV !== "production") {
+    console.error(err);
+  }
+
+  // Erreur de parsing JSON (body malformé)
+  if (err.type === "entity.parse.failed") {
+    return res.status(400).json({ message: "Corps de requête JSON invalide." });
+  }
+
+  // Payload trop grand (limite 1mb)
+  if (err.type === "entity.too.large") {
+    return res.status(413).json({ message: "Requête trop volumineuse." });
+  }
+
+  // Toutes les autres erreurs
+  return res.status(500).json({ message: "Erreur serveur." });
+});
+
+// ==========================================
+// 4. LANCEMENT DU SERVEUR
 // ==========================================
 const port = process.env.PORT || 3000;
 
