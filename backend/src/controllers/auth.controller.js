@@ -288,4 +288,5 @@ module.exports = {
   login,
   getProfile,
   updateProfile,
+  tryVerifyPassword
 };
