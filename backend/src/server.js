@@ -14,7 +14,24 @@ const adminRoutes = require('./routes/admin.routes');
 const app = express();
 
 // Sécurité : headers HTTP
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https://raw.githubusercontent.com", "https://assets.pokemon.com"],
+      connectSrc: [
+        "'self'",
+        "https://pokeapi.co",
+        "https://api.iconify.design",
+        "https://api.unisvg.com",
+        "https://api.simplesvg.com",
+      ],
+      fontSrc: ["'self'", "data:"],
+    },
+  },
+}));
 
 // Sécurité : CORS
 const corsOrigin = process.env.CLIENT_URL || (process.env.NODE_ENV === "production" ? undefined : "http://localhost:5173");
