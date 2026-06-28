@@ -231,7 +231,7 @@ function EditProfileModal({ user, avatarUrl, onSave, onClose }) {
               </div>
             )}
             <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-              <span className="text-white text-2xl">📷</span>
+              <Icon icon="ph:camera" className="text-white w-6 h-6" />
             </div>
           </div>
 
@@ -376,7 +376,7 @@ function LoggedInView({ user, favorites, formatDate, onLogout, refreshData, avat
 				/>
 			)}
  
-			<div className="bg-[#111c30] border border-gray-800 rounded-2xl p-6 flex items-center justify-between">
+			<div className="bg-[#111c30] border border-gray-800 rounded-2xl p-6 flex justify-between">
 				<div className="flex items-start gap-5">
 					<div className="w-16 h-16 rounded-full flex items-center justify-center border-2 border-cyan-700 overflow-hidden flex-shrink-0 mt-1">
 						{avatarUrl ? (
@@ -387,13 +387,13 @@ function LoggedInView({ user, favorites, formatDate, onLogout, refreshData, avat
 							</div>
 						)}
 					</div>
-					<div>
-						<h3 className="text-xl font-bold">{user.username}</h3>
+					<div className="flex justify-start flex-col gap-1">
+						<h3 className="text-xl font-bold justify-start">{user.username}</h3>
 						<p className="text-gray-400 text-sm flex items-center gap-2">
-							<span>✉️</span> {user.email}
+							<Icon icon="ph:envelope-simple" className="w-4 h-4" /> {user.email}
 						</p>
 						<p className="text-gray-500 text-sm flex items-center gap-2">
-							<span>📅</span> Membre depuis le {formatDate(user.createdAt)}
+							<Icon icon="ph:calendar" className="w-4 h-4" /> Membre depuis le {formatDate(user.createdAt)}
 						</p>
 					</div>
 				</div>
@@ -402,7 +402,7 @@ function LoggedInView({ user, favorites, formatDate, onLogout, refreshData, avat
 					className="p-3 hover:bg-gray-800 rounded-full transition-colors text-gray-400 hover:text-cyan-400"
 					title="Modifier le profil"
 				>
-					✏️
+					<Icon icon="ph:pencil-simple" className="w-5 h-5" />
 				</button>
 			</div>
  
@@ -458,7 +458,7 @@ function LoggedInView({ user, favorites, formatDate, onLogout, refreshData, avat
 									: 'hover:bg-gray-800 text-gray-400'
 							}`}
 						>
-							🔍
+							<Icon icon="ph:magnifying-glass" className="w-5 h-5" />
 						</button>
 					)}
 				</div>
@@ -478,23 +478,23 @@ function LoggedInView({ user, favorites, formatDate, onLogout, refreshData, avat
 				{teamsToDisplay.length > 0 ? (
 					<div className="space-y-4">
 						{teamsToDisplay.map((team) => (
-							<div key={team.id} className="bg-[#0a1120] border border-gray-800 rounded-xl p-4">
+							<div key={team.id} className="bg-[#152035] border border-gray-700 rounded-xl p-4">
 								<div className="flex justify-between items-center mb-3">
 									<h5 className="font-bold text-cyan-400">{team.name}</h5>
 									<div className="flex items-center gap-3">
 										<button
 											onClick={() => handleEditTeam(team)}
-											className="text-xs text-gray-400 hover:text-cyan-400 transition-colors"
+											className="text-gray-400 hover:text-cyan-400 transition-colors"
 											title="Modifier l'équipe"
 										>
-											✏️
+											<Icon icon="ph:pencil-simple" className="w-4 h-4" />
 										</button>
 										<button
 											onClick={() => handleDeleteTeam(team.id)}
-											className="text-xs text-gray-400 hover:text-red-400 transition-colors"
+											className="text-gray-400 hover:text-red-400 transition-colors"
 											title="Supprimer l'équipe"
 										>
-											🗑️
+											<Icon icon="ph:trash" className="w-4 h-4" />
 										</button>
 										<span className="text-xs text-gray-500 ml-2">
 											{formatDate(team.createdAt)}
@@ -506,10 +506,10 @@ function LoggedInView({ user, favorites, formatDate, onLogout, refreshData, avat
 									{team.teamPokemons.map((tp) => (
 										<div
 											key={tp.id}
-											className="flex-shrink-0 bg-[#111c30] border border-gray-700 rounded-lg p-2 text-center w-20"
+											className="flex-shrink-0 bg-[#111c30] border border-gray-700 rounded-lg p-2 w-20"
 										>
 											<img src={tp.spriteUrl} className="w-12 h-12 mx-auto" />
-											<p className="text-[10px] truncate text-gray-300 capitalize">
+											<p className="text-[10px] truncate text-gray-300 capitalize" style={{ textAlign: "left" }}>
 												{tp.pokemonName}
 											</p>
 										</div>
@@ -542,7 +542,7 @@ function LoggedOutView() {
 		<div className="flex justify-center">
 			<div className="bg-[#111c30] border border-gray-800 rounded-2xl p-12 flex flex-col items-center text-center max-w-md">
 				<div className="bg-cyan-900/30 w-20 h-20 rounded-2xl mb-6 flex items-center justify-center border border-cyan-800">
-					<span className="text-4xl text-cyan-400">👤</span>
+					<Icon icon="ph:user" className="text-4xl text-cyan-400 w-10 h-10" />
 				</div>
 				<h3 className="text-xl font-semibold mb-2">Connectez-vous pour accéder à votre profil</h3>
 				<p className="text-gray-400 mb-8 text-sm">Gérez vos informations et votre équipe Pokémon.</p>

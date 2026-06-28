@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { Icon } from "@iconify/react";
 import { getToken } from "../utils/auth";
+import { typeTranslations } from "../utils/Types";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 const POKEAPI_URL = "https://pokeapi.co/api/v2";
@@ -8,12 +10,12 @@ const COLOR_A = "#22d3ee";
 const COLOR_B = "#818cf8";
 
 const STAT_META = [
-  { key: "hp",               label: "PV",        icon: "♥", color: "#f87171" },
-  { key: "attack",           label: "Attaque",   icon: "⚔", color: "#fb923c" },
-  { key: "defense",          label: "Défense",   icon: "◎", color: "#60a5fa" },
-  { key: "special-attack",   label: "Atk. Spé.", icon: "✦", color: "#c084fc" },
-  { key: "special-defense",  label: "Déf. Spé.", icon: "◈", color: "#34d399" },
-  { key: "speed",            label: "Vitesse",   icon: "⚡", color: "#facc15" },
+  { key: "hp",               label: "PV",        icon: "ph:heart",          color: "#f87171" },
+  { key: "attack",           label: "Attaque",   icon: "ph:sword",          color: "#fb923c" },
+  { key: "defense",          label: "Défense",   icon: "ph:shield",         color: "#60a5fa" },
+  { key: "special-attack",   label: "Atk. Spé.", icon: "ph:shooting-star",  color: "#c084fc" },
+  { key: "special-defense",  label: "Déf. Spé.", icon: "ph:shield-check",   color: "#34d399" },
+  { key: "speed",            label: "Vitesse",   icon: "ph:lightning",      color: "#facc15" },
 ];
 
 const TYPE_COLORS = {
@@ -29,12 +31,18 @@ async function fetchPokemonStats(id) {
   const key = `pstats_${id}`;
   const cached = sessionStorage.getItem(key);
   if (cached) return JSON.parse(cached);
-  const res = await fetch(`${POKEAPI_URL}/pokemon/${id}`);
-  const data = await res.json();
+  const [detailRes, speciesRes] = await Promise.all([
+    fetch(`${POKEAPI_URL}/pokemon/${id}`),
+    fetch(`${POKEAPI_URL}/pokemon-species/${id}`),
+  ]);
+  const data = await detailRes.json();
+  const species = await speciesRes.json();
   const stats = {};
   data.stats.forEach((s) => { stats[s.stat.name] = s.base_stat; });
+  const nameFr = species.names.find((n) => n.language.name === "fr")?.name ?? data.name;
   const result = {
     stats,
+    nameFr,
     types: data.types.map((t) => t.type.name),
     image: data.sprites.other["official-artwork"].front_default,
   };
@@ -66,9 +74,9 @@ function TypeTag({ type }) {
     <span style={{
       background: c + "22", color: c, border: `1px solid ${c}44`,
       padding: "2px 9px", borderRadius: 999, fontSize: 11, fontWeight: 600,
-      textTransform: "capitalize", whiteSpace: "nowrap",
+      whiteSpace: "nowrap",
     }}>
-      {type}
+      {typeTranslations[type] || type}
     </span>
   );
 }
@@ -179,7 +187,7 @@ function StatBar({ meta, valA, valB }) {
 
       {/* Label */}
       <div style={{ textAlign: "center", lineHeight: 1 }}>
-        <div style={{ fontSize: 16, color: meta.color, marginBottom: 3 }}>{meta.icon}</div>
+        <div style={{ fontSize: 16, color: meta.color, marginBottom: 3, display: "flex", justifyContent: "center" }}><Icon icon={meta.icon} /></div>
         <div style={{ fontSize: 10, color: "#475569", fontWeight: 700, letterSpacing: "0.05em" }}>
           {meta.label}
         </div>
@@ -309,11 +317,11 @@ function ComparisonPanel({ teamA, teamB, statsA, statsB }) {
                   <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <img
                       src={d?.image || p.spriteUrl}
-                      alt={p.pokemonName}
+                      alt={d?.nameFr || p.pokemonName}
                       style={{ width: 40, height: 40, objectFit: "contain", flexShrink: 0 }}
                     />
                     <span style={{ fontSize: 13, fontWeight: 600, textTransform: "capitalize", color: "#e2e8f0", flex: 1, minWidth: 0 }}>
-                      {p.pokemonName}
+                      {d?.nameFr || p.pokemonName}
                     </span>
                     {d && (
                       <div style={{ display: "flex", gap: 4, flexWrap: "wrap", justifyContent: "flex-end" }}>
@@ -427,7 +435,7 @@ export default function TeamComparison() {
 
   return (
     <div style={{
-      minHeight: "100vh", background: "#060e1a", color: "#f1f5f9",
+      minHeight: "100vh", background: "#091120", color: "#f1f5f9",
       fontFamily: "'Inter', 'Segoe UI', sans-serif",
       padding: "32px 24px", maxWidth: 980, margin: "0 auto",
     }}>
@@ -450,7 +458,7 @@ export default function TeamComparison() {
           background: "#0d1f35", border: "1px solid #1e3a5a",
           borderRadius: 18, padding: 32, color: "#64748b", textAlign: "center",
         }}>
-          <div style={{ fontSize: 32, marginBottom: 12 }}>⚔</div>
+          <div style={{ fontSize: 32, marginBottom: 12 }}><Icon icon="ph:sword" style={{ color: "#475569" }} /></div>
           <p style={{ margin: 0, fontWeight: 600 }}>
             Il te faut au moins 2 équipes sauvegardées pour les comparer.
           </p>

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import { useLocation, useSearchParams, useNavigate } from "react-router-dom";
+import { Icon } from "@iconify/react";
 import { fetchAllPokemon } from "../api/pokemonApi";
 import { createTeam, updateTeam } from "../api/teamApi";
 import TypeBadge from "../components/TypeBadge";
@@ -225,19 +226,19 @@ function PokemonSlot({ pokemon, index, onRemove, onAdd, selectablePokemon, selec
                   }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                  <span style={{ color: "#f87171", fontSize: 12 }}>♥</span>
+                  <Icon icon="ph:heart" style={{ color: "#f87171", fontSize: 12 }} />
                   <span style={{ color: "#94a3b8", fontSize: 12 }}>{pokemon.stats.hp}</span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                  <span style={{ color: "#fb923c", fontSize: 12 }}>⚔</span>
+                  <Icon icon="ph:sword" style={{ color: "#fb923c", fontSize: 12 }} />
                   <span style={{ color: "#94a3b8", fontSize: 12 }}>{pokemon.stats.attack}</span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                  <span style={{ color: "#60a5fa", fontSize: 12 }}>◎</span>
+                  <Icon icon="ph:shield" style={{ color: "#60a5fa", fontSize: 12 }} />
                   <span style={{ color: "#94a3b8", fontSize: 12 }}>{pokemon.stats.defense}</span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                  <span style={{ color: "#facc15", fontSize: 12 }}>⚡</span>
+                  <Icon icon="ph:lightning" style={{ color: "#facc15", fontSize: 12 }} />
                   <span style={{ color: "#94a3b8", fontSize: 12 }}>{pokemon.stats.speed}</span>
                 </div>
               </div>
@@ -269,13 +270,13 @@ function TeamSummary({ team }) {
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
           {[
-            { icon: "♥", color: "#f87171", value: avg("hp"), label: "PV moyens" },
-            { icon: "⚔", color: "#fb923c", value: avg("attack"), label: "Attaque moy." },
-            { icon: "◎", color: "#60a5fa", value: avg("defense"), label: "Défense moy." },
-            { icon: "⚡", color: "#facc15", value: avg("speed"), label: "Vitesse moy." },
+            { icon: "ph:heart", color: "#f87171", value: avg("hp"), label: "PV moyens" },
+            { icon: "ph:sword", color: "#fb923c", value: avg("attack"), label: "Attaque moy." },
+            { icon: "ph:shield", color: "#60a5fa", value: avg("defense"), label: "Défense moy." },
+            { icon: "ph:lightning", color: "#facc15", value: avg("speed"), label: "Vitesse moy." },
           ].map(({ icon, color, value, label }) => (
               <div key={label}>
-                <div style={{ color, fontSize: 20, marginBottom: 4 }}>{icon}</div>
+                <div style={{ color, fontSize: 20, marginBottom: 4 }}><Icon icon={icon} /></div>
                 <div style={{ fontSize: 28, fontWeight: 800, color: "#f1f5f9", lineHeight: 1 }}>{value}</div>
                 <div style={{ color: "#64748b", fontSize: 12, marginTop: 4 }}>{label}</div>
               </div>
@@ -490,7 +491,7 @@ export default function TeamBuilder() {
   }
 
   return (
-      <div className="min-h-screen bg-[#060e1a] text-[#f1f5f9] px-6 py-8 max-w-[960px] mx-auto">
+      <div className="min-h-screen bg-[#091120] text-[#f1f5f9] px-6 py-8 max-w-[960px] mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start justify-between gap-6 mb-8">
           <div>
